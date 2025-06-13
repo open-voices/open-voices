@@ -1,9 +1,17 @@
-import { Hono } from 'hono'
+import { Hono } from "hono";
+import { PRISMA } from "./lib/prisma";
+import { makeAuthConfig } from "@open-voices/shared/auth/server";
 
-const app = new Hono()
+const APP = new Hono();
 
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
-})
+APP.get(`/`, (c) => c.text(`Hello Hono!`));
+APP.on([
+    `POST`,
+    `GET`,
+], `/api/auth/**`, (c) => makeAuthConfig(PRISMA).handler(c.req.raw));
 
-export default app
+
+export default {
+    port:  3000,
+    fetch: APP.fetch,
+};

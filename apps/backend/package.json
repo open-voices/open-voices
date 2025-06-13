@@ -1,12 +1,14 @@
 {
-  "name": "backend",
+  "name": "@open-voices/backend",
   "scripts": {
     "dev": "bun run --hot src/index.ts"
   },
   "dependencies": {
+    "@open-voices/shared": "workspace:*",
     "hono": "^4.7.11"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "prisma": "^6.9.0"
   }
 }
