@@ -34,7 +34,7 @@
    You can self-host Open Voices or use a managed instance (coming soon).
 
    ```bash
-   git clone https://github.com/[your-org]/open-voices.git
+   git clone https://github.com/open-voices/open-voices.git
    cd open-voices
    npm install
    npm run setup
@@ -73,8 +73,7 @@ Or use API endpoints as described in the [API Documentation](docs/API.md).
 
 We welcome contributions of all kinds! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to get involved.
 
-- Report bugs and request features via [GitHub Issues](https://github.com/[your-org]/open-voices/issues)
-- Join the conversation in [Discussions](https://github.com/[your-org]/open-voices/discussions)
+- Report bugs and request features via [GitHub Issues](https://github.com/open-voices/open-voices/issues)
 - Submit pull requests and help shape the future of Open Voices
 
 ---
