@@ -1,0 +1,22 @@
+{
+  "name": "@open-voices/transactional",
+  "type": "module",
+  "private": false,
+  "exports": {
+    "./verification-email": {
+      "default": "./src/verification-email.ts"
+    },
+    "./password-reset-email": {
+      "default": "./src/password-reset-email.ts"
+    }
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "radash": "^12.1.0"
+  }
+}

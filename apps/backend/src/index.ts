@@ -1,4 +1,7 @@
 import { Hono } from "hono";
+import {
+    renderMail, sendMail
+} from "./lib/mailer.ts";
 import { PRISMA } from "./lib/prisma";
 import { makeAuthConfig } from "@open-voices/shared/auth/server";
 
@@ -8,7 +11,11 @@ APP.get(`/`, (c) => c.text(`Hello Hono!`));
 APP.on([
     `POST`,
     `GET`,
-], `/api/auth/**`, (c) => makeAuthConfig(PRISMA).handler(c.req.raw));
+], `/api/auth/**`, async(c) => await makeAuthConfig({
+    prisma: PRISMA,
+    sendMail,
+    renderMail,
+}).handler(c.req.raw));
 
 
 export default {

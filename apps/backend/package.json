@@ -5,10 +5,14 @@
   },
   "dependencies": {
     "@open-voices/shared": "workspace:*",
-    "hono": "^4.7.11"
+    "hono": "^4.7.11",
+    "mjml": "^4.15.3",
+    "nodemailer": "^7.0.3"
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/mjml": "^4.7.4",
+    "@types/nodemailer": "^6.4.17",
     "prisma": "^6.9.0"
   }
 }

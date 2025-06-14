@@ -186,8 +186,8 @@ export default defineConfig([
                 {
                     "selector": "variable",
                     "types":    [ "boolean" ],
-                    "format":   [ "snake_case" ],
-                    "prefix":   [ "is_", "should_", "has_", "can_", "did_", "will_" ],
+                    "format":   [ "snake_case", "UPPER_CASE" ],
+                    "prefix":   [ "is_", "should_", "has_", "can_", "did_", "will_", "IS_", "SHOULD_", "HAS_", "CAN_", "DID_", "WILL_" ],
                 },
                 {
                     "selector": "variable",
