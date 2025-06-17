@@ -116,8 +116,8 @@ model InstallationSettings {
 
 model Website {
   id                    String   @id @default(cuid(2))
-  name                  String
-  url                   String
+  name                  String   @unique
+  url                   String   @unique
   description           String?
   page_identifier_rules Json
   created_at            DateTime @default(now())
