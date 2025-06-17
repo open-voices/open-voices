@@ -1,0 +1,50 @@
+@layer theme, base, mantine, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "@mantine/core/styles.layer.css";
+
+@theme {
+    --font-mono: "Ubuntu Sans Mono Variable", monospace;
+}
+
+@utility brutal-filter {
+    @apply bg-white;
+    filter: drop-shadow(4px 4px 0px #000);
+}
+
+@utility brutal-filter-none {
+    @apply bg-white;
+    filter: drop-shadow(0px 0px 0px #000);
+}
+
+@layer components {
+    .brutal-card {
+        @apply bg-white border-4 border-solid border-black transition-all duration-200 ease-in-out brutal-filter;
+
+        &:hover {
+            @apply brutal-filter-none;
+        }
+    }
+
+    .brutal-dialog {
+        @apply bg-white border-4 border-solid border-black brutal-filter;
+    }
+
+    .brutal-navbar {
+        @apply bg-white border-4 border-solid border-black rounded-xl my-1 ml-1 brutal-filter;
+        height: calc(100dvh - var(--spacing) * 3);
+    }
+
+    .brutal-nav-link:not([data-active="true"]) {
+        @apply text-black transition-all duration-200 ease-in-out;
+
+        &:hover:not(.no-animation) {
+            @apply bg-neutral-100 ml-1.5;
+        }
+
+        &.no-animation:hover {
+            @apply bg-neutral-100;
+        }
+    }
+}

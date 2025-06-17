@@ -1,0 +1,37 @@
+{
+	"name": "@open-voices/admin",
+	"private": false,
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"@fontsource-variable/ubuntu-sans-mono": "^5.2.8",
+		"@mantine/core": "^8.1.1",
+		"@mantine/form": "^8.1.1",
+		"@mantine/hooks": "^8.1.1",
+		"@mantine/modals": "^8.1.1",
+		"@tabler/icons-preact": "^3.34.0",
+		"@tailwindcss/vite": "^4.1.10",
+		"better-auth": "^1.2.9",
+		"mantine-form-zod-resolver": "^1.2.1",
+		"preact": "^10.25.3",
+		"preact-iso": "^2.9.2",
+		"react": "npm:@preact/compat",
+		"react-dom": "npm:@preact/compat",
+		"tailwindcss": "^4.1.10",
+		"zod": "^3.25.67"
+	},
+	"devDependencies": {
+		"@preact/preset-vite": "^2.9.3",
+		"postcss": "^8.5.6",
+		"postcss-preset-mantine": "^1.17.0",
+		"postcss-simple-vars": "^7.0.1",
+		"vite": "^6.0.4"
+	},
+	"eslintConfig": {
+		"extends": "preact"
+	}
+}

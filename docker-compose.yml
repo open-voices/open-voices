@@ -1,6 +1,7 @@
 services:
   postgres-dev:
     image: postgres:latest
+    restart: unless-stopped
     environment:
       POSTGRES_USER: open_voices
       POSTGRES_PASSWORD: open_voices

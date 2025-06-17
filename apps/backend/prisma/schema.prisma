@@ -25,10 +25,12 @@ model User {
   banReason     String?
   banExpires    DateTime?
 
-  createdAt DateTime
-  updatedAt DateTime
-  sessions  Session[]
-  accounts  Account[]
+  createdAt    DateTime
+  updatedAt    DateTime
+  sessions     Session[]
+  accounts     Account[]
+  comments     Comment[]
+  interactions CommentInteraction[]
 
   @@unique([email])
   @@map("user")
@@ -96,4 +98,68 @@ model RateLimit {
   lastRequest BigInt
 
   @@map("rateLimit")
+}
+
+enum InstallationSettingName {
+  ALLOW_ANONYMOUS_ACCESS
+  ALLOW_SIGNUPS
+  IS_FIRST_SETUP_COMPLETED
+}
+
+model InstallationSettings {
+  id    String                  @id @default(cuid(2))
+  name  InstallationSettingName @unique
+  value Json
+
+  @@map("installation_settings")
+}
+
+model Website {
+  id                    String   @id @default(cuid(2))
+  name                  String
+  url                   String
+  description           String?
+  page_identifier_rules Json
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  comments Comment[]
+
+  @@map("website")
+}
+
+model Comment {
+  id              String   @id @default(cuid(2))
+  page_identifier String
+  content         String
+  author_id       String
+  website_id      String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  author       User                 @relation(fields: [author_id], references: [id], onDelete: Cascade)
+  website      Website              @relation(fields: [website_id], references: [id], onDelete: Cascade)
+  interactions CommentInteraction[]
+
+  @@map("comment")
+}
+
+enum InteractionType {
+  LIKE
+  DISLIKE
+  REPORT
+}
+
+model CommentInteraction {
+  comment_id String
+  user_id    String
+  type       InteractionType
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  comment Comment @relation(fields: [comment_id], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@id([comment_id, user_id])
+  @@map("comment_interaction")
 }

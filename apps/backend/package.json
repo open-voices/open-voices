@@ -1,18 +1,18 @@
 {
-  "name": "@open-voices/backend",
-  "scripts": {
-    "dev": "bun run --hot src/index.ts"
-  },
-  "dependencies": {
-    "@open-voices/shared": "workspace:*",
-    "hono": "^4.7.11",
-    "mjml": "^4.15.3",
-    "nodemailer": "^7.0.3"
-  },
-  "devDependencies": {
-    "@types/bun": "latest",
-    "@types/mjml": "^4.7.4",
-    "@types/nodemailer": "^6.4.17",
-    "prisma": "^6.9.0"
-  }
+    "name": "@open-voices/backend",
+    "scripts": {
+        "dev": "bun run --hot src/index.ts"
+    },
+    "dependencies": {
+        "hono": "^4.7.11",
+        "mjml": "^4.15.3",
+        "nodemailer": "^7.0.3",
+        "@open-voices/transactional": "workspace:*"
+    },
+    "devDependencies": {
+        "@types/bun": "latest",
+        "@types/mjml": "^4.7.4",
+        "@types/nodemailer": "^6.4.17",
+        "prisma": "^6.9.0"
+    }
 }
