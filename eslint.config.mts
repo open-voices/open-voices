@@ -61,7 +61,7 @@ export default defineConfig([
             "max-classes-per-file":                                            [ "error", 1 ],
             "max-depth":                                                       [ "error", 4 ],
             "max-nested-callbacks":                                            [ "error", 4 ],
-            "new-cap":                                                         "error",
+            "new-cap":                                                         "warn",
             "no-alert":                                                        "error",
             "no-array-constructor":                                            "error",
             "no-caller":                                                       "error",

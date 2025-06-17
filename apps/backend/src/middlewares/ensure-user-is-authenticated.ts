@@ -2,6 +2,11 @@ import { HTTPException } from "hono/http-exception";
 import { createMiddleware } from "hono/factory";
 import type { HonoEnv } from "../types/hono.ts";
 
+/**
+ * Middleware to ensure the user is authenticated.
+ * If the user is not authenticated, it throws a 401 Unauthorized error.
+ */
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const ensureUserIsAuthenticated = createMiddleware<HonoEnv>(async(c, next) => {
     const user = c.get(`user`);
     const session = c.get(`session`);

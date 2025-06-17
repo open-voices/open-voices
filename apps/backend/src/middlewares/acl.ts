@@ -13,7 +13,8 @@ import type { HonoEnv } from "../types/hono.ts";
  * @param {Partial<AccessControlPermissions>} permissions
  * @returns {MiddlewareHandler<HonoEnv>}
  */
-export function userHasPermission(permissions: Partial<AccessControlPermissions>): MiddlewareHandler<HonoEnv> {
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export function ACL(permissions: Partial<AccessControlPermissions>): MiddlewareHandler<HonoEnv> {
     return createMiddleware<HonoEnv>(async(c, next) => {
         const user = c.get(`user`);
 
@@ -21,6 +22,23 @@ export function userHasPermission(permissions: Partial<AccessControlPermissions>
             return c.json({
                 error: `Authentication required`,
             }, UNAUTHORIZED);
+        }
+
+        if (permissions.is_banned !== undefined) {
+            if (
+                (
+                    permissions.is_banned && !user.banned
+                ) || (
+                    !permissions.is_banned && user.banned
+                )
+            ) {
+                return c.json({
+                    error: `You do not have permissions to perform this action`,
+                }, FORBIDDEN);
+            }
+
+            // Remove is_banned from permissions as it is not a permission
+            permissions.is_banned = undefined;
         }
 
         const response = await auth.api.userHasPermission({

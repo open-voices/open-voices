@@ -4,6 +4,7 @@ import { logger } from "hono/logger";
 import { auth } from "./lib/auth.ts";
 import { ensureUserIsAuthenticated } from "./middlewares/ensure-user-is-authenticated.ts";
 import { registerUserAndSession } from "./middlewares/register-user-and-session.ts";
+import { COMMENTS } from "./routes/comments.ts";
 import { WEBSITES } from "./routes/websites.ts";
 import { setup } from "./setup.ts";
 import type { HonoEnv } from "./types/hono.ts";
@@ -48,7 +49,8 @@ const APP = new Hono<HonoEnv>()
         `*`,
         ensureUserIsAuthenticated
     )
-    .route(`/`, WEBSITES);
+    .route(`/`, WEBSITES)
+    .route(`/`, COMMENTS);
 
 export default {
     port:  3000,

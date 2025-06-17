@@ -1,0 +1,19 @@
+{
+  "name": "@open-voices/validation",
+  "type": "module",
+  "private": false,
+  "exports": {
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "zod": "^3.25.67"
+  }
+}

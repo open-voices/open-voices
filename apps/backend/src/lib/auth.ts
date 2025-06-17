@@ -9,6 +9,10 @@ import {
     renderMail, sendMail
 } from "./mailer.ts";
 import { PRISMA } from "./prisma.ts";
+import { createAccessControl } from "better-auth/plugins/access";
+import {
+    defaultStatements, adminAc, userAc
+} from "better-auth/plugins/admin/access";
 
 /**
  * The default minimum password length for user accounts.
@@ -34,7 +38,66 @@ const DEFAULT_RATE_LIMIT_MAX_REQUESTS = 100;
 const APP_NAME = process.env.APP_NAME ?? `Open Voices`;
 const DOMAIN = new URL(process.env.BASE_URL ?? `http://localhost:3000`).hostname;
 
-const AUTH = betterAuth({
+export type AccessControlPermissions = Partial<{
+    website:   Array<`create` | `read` | `update` | `delete` | `list`>
+    user:      Array<`create` | `list` | `set-role` | `ban` | `impersonate` | `delete` | `set-password`>
+    session:   Array<`list` | `revoke` | `delete`>
+    comments:  Array<`create` | `update` | `delete` | `interact` | `admin.list` | `admin.delete` | `admin.update`>
+    is_banned: boolean
+}>;
+
+const ACCESS_CONTROL = createAccessControl({
+    ...defaultStatements,
+    website: [
+        `create`,
+        `read`,
+        `update`,
+        `delete`,
+        `list`,
+    ],
+    comments: [
+        `create`,
+        `update`,
+        `delete`,
+        `interact`,
+        `admin.list`,
+        `admin.delete`,
+        `admin.update`,
+    ],
+} as const);
+
+const ADMIN_ROLE = ACCESS_CONTROL.newRole({
+    ...adminAc.statements,
+    website: [
+        `create`,
+        `read`,
+        `update`,
+        `delete`,
+        `list`,
+    ],
+    comments: [
+        `create`,
+        `update`,
+        `delete`,
+        `interact`,
+        `admin.list`,
+        `admin.delete`,
+        `admin.update`,
+    ],
+});
+
+const USER_ROLE = ACCESS_CONTROL.newRole({
+    ...userAc.statements,
+    comments: [
+        `create`,
+        `update`,
+        `delete`,
+        `interact`,
+    ],
+});
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const auth = betterAuth({
     appName:           APP_NAME,
     baseURL:           process.env.BASE_URL ?? `http://localhost:3000`,
     secret:            process.env.APP_SECRET,
@@ -131,11 +194,12 @@ const AUTH = betterAuth({
             bannedUserMessage:   process.env.BAN_MESSAGE ??
                                  // eslint-disable-next-line @stylistic/js/max-len
                                  `You have been banned from this application. If you believe this is a mistake, please contact support.`,
+            ac:    ACCESS_CONTROL,
+            roles: {
+                admin: ADMIN_ROLE,
+                user:  USER_ROLE,
+            },
         }),
     ],
 });
 
-export default AUTH;
-export {
-    AUTH as auth
-};

@@ -101,9 +101,11 @@ model RateLimit {
 }
 
 enum InstallationSettingName {
-  ALLOW_ANONYMOUS_ACCESS
-  ALLOW_SIGNUPS
   IS_FIRST_SETUP_COMPLETED
+  ALLOW_NEW_COMMENTS
+  ALLOW_COMMENT_UPDATES
+  ALLOW_COMMENT_DELETION
+  ALLOW_COMMENT_INTERACTIONS
 }
 
 model InstallationSettings {
@@ -161,5 +163,7 @@ model CommentInteraction {
   user    User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@id([comment_id, user_id])
+  @@index([comment_id])
+  @@index([type])
   @@map("comment_interaction")
 }

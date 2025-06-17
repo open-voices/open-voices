@@ -1,166 +1,116 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import z from "zod/v4";
 import {
     BAD_REQUEST, CREATED,  NOT_FOUND
 } from "../lib/const.ts";
+import { formatUrlMatch } from "../lib/glob-match.ts";
 import { PRISMA } from "../lib/prisma.ts";
-import { userHasPermission } from "../middlewares/user-has-permission.ts";
+import { ACL } from "../middlewares/acl.ts";
+import { withFeatures } from "../middlewares/with-features.ts";
 import type { HonoEnv } from "../types/hono.ts";
+import {
+    ADMIN_DELETE_COMMENT_SCHEMA_PARAMS, ADMIN_GET_WEBSITE_COMMENTS_SCHEMA_PARAMS,
+    ADMIN_GET_WEBSITE_COMMENTS_SCHEMA_QUERY, ADMIN_UPDATE_COMMENT_SCHEMA,
+    ADMIN_UPDATE_COMMENT_SCHEMA_PARAMS, CREATE_COMMENT_SCHEMA, CREATE_COMMENT_SCHEMA_PARAMS,
+    DELETE_COMMENT_SCHEMA_PARAMS, GET_WEBSITE_COMMENTS_SCHEMA_PARAMS, GET_WEBSITE_COMMENTS_SCHEMA_QUERY,
+    INTERACT_COMMENT_SCHEMA, INTERACT_COMMENT_SCHEMA_PARAMS, UPDATE_COMMENT_SCHEMA, UPDATE_COMMENT_SCHEMA_PARAMS
+} from "@open-voices/validation/comment-schemas";
 
-const CREATE_UPDATE_WEBSITE_SCHEMA = z.object({
-    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-    name:                  z.string().min(5, `Name must be at least 5 characters long`),
-    url:                   z.url(`Invalid URL format`),
-    description:           z.string().optional(),
-    page_identifier_rules: z.array(
-        z.object({
-            url:    z.url(`Invalid URL format`),
-            format: z.string().regex(
+export const COMMENTS = new Hono<HonoEnv>()
+    .basePath(`comments`)
 
-                // Allows a format that can contain placeholders like:
-                // - {title($1)}
-                // - {dash($1)}
-                // - {snake($1)}
-                // - {$1}
-                // - static text like "Page Title"
-                // - alphanumeric characters, dashes, underscores, and spaces
-                // - or a combination of these
-                //
-                // Valid examples:
-                // - {title($1)}
-                // - {dash($1)}
-                // - {snake($1)}
-                // - {title($1)} {dash($2)}
-                // - {title($1)} {snake($2)}
-                // - {title($1)} static {dash($2)} text {snake($3)}
-                // - {$1}
-                // - static text
-                //
-                // Invalid examples:
-                // - missing closing brace: {title($1) {dash($2)}
-                // - invalid characters: {title($1)} {dash($2)} @invalid
-                // - empty format: {}
-                // - only spaces: {   }
-                // - no placeholders or static text: {title} {dash} {snake}
-                // - invalid transformation: {rambo($1)}
-                /^(?:\{(?:title|dash|snake)\(\$\d+\)}|[A-Za-z0-9\-_ ]+|\{\$\d+})+$/g,
-                `Format must be a valid string with placeholders or static text`
-            )
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-                .min(1, `Format must not be empty`),
-        })
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-    ).min(1, `At least one page identifier rule is required`),
-});
-
-export const WEBSITES = new Hono<HonoEnv>()
-    .basePath(`websites`)
-
-    // Create a new website
+    // Create a new comment
     .post(
-        ``,
-        userHasPermission({
-            website: [ `create` ],
+        `/:website_id`,
+        ACL({
+            comments:  [ `create` ],
+            is_banned: false,
         }),
+        withFeatures([ `ALLOW_NEW_COMMENTS` ]),
+        zValidator(
+            `param`,
+            CREATE_COMMENT_SCHEMA_PARAMS
+        ),
         zValidator(
             `json`,
-            CREATE_UPDATE_WEBSITE_SCHEMA
+            CREATE_COMMENT_SCHEMA
         ),
         async(c) => {
+            const {
+                website_id,
+            } = c.req.valid(`param`);
             const data = c.req.valid(`json`);
 
-            if (await PRISMA.website.exists({
-                url: data.url,
-            })) {
+            const website = await PRISMA.website.findUnique({
+                where: {
+                    id: website_id,
+                },
+            });
+
+            if (!website) {
                 return c.json(
                     {
-                        error: `Website with this URL already exists`,
+                        error: `Website not found`,
+                    },
+                    NOT_FOUND
+                );
+            }
+
+            const page_identifier = formatUrlMatch(website, data.url);
+            if (!page_identifier) {
+                return c.json(
+                    {
+                        error: `Page URL does not match any identifier rules for this website`,
                     },
                     BAD_REQUEST
                 );
             }
 
-            if (await PRISMA.website.exists({
-                name: data.name,
-            })) {
-                return c.json(
-                    {
-                        error: `Website with this name already exists`,
-                    },
-                    BAD_REQUEST
-                );
-            }
-
-            const website = await PRISMA.website.create({
+            const comment = await PRISMA.comment.create({
                 data: {
-                    name:                  data.name,
-                    url:                   data.url,
-                    description:           data.description,
-                    page_identifier_rules: data.page_identifier_rules,
+                    page_identifier,
+                    content:   data.content,
+                    website_id,
+                    author_id: c.get(`user`)!.id,
                 },
             });
 
             return c.json(
                 {
-                    id:                    website.id,
-                    name:                  website.name,
-                    url:                   website.url,
-                    description:           website.description,
-                    page_identifier_rules: website.page_identifier_rules,
+                    id:      comment.id,
+                    page_identifier,
+                    content: comment.content,
                 },
                 CREATED
             );
         }
     )
 
-    // Get all websites
+    // Get comments for a specific website and page identifier
+    // NOTE: This endpoint is public and does not require authentication
     .get(
-        ``,
-        userHasPermission({
-            website: [ `list` ],
-        }),
-        async(c) => {
-            const websites = await PRISMA.website.findMany({
-                orderBy: {
-                    name: `asc`,
-                },
-            });
-
-            return c.json(
-                websites.map((website) => (
-                    {
-                        id:                    website.id,
-                        name:                  website.name,
-                        url:                   website.url,
-                        description:           website.description,
-                        page_identifier_rules: website.page_identifier_rules,
-                    }
-                ))
-            );
-        }
-    )
-
-    // Get a website by ID
-    .get(
-        `/:id`,
-        userHasPermission({
-            website: [ `read` ],
-        }),
+        `/:website_id/:url`,
         zValidator(
             `param`,
-            z.object({
-                id: z.cuid2(`Invalid website ID format`),
-            })
+            GET_WEBSITE_COMMENTS_SCHEMA_PARAMS
+        ),
+        zValidator(
+            `query`,
+            GET_WEBSITE_COMMENTS_SCHEMA_QUERY
         ),
         async(c) => {
             const {
-                id,
+                website_id,
+                url,
             } = c.req.valid(`param`);
+            const {
+                page,
+                limit,
+            } = c.req.valid(`query`);
 
             const website = await PRISMA.website.findUnique({
                 where: {
-                    id,
+                    id: website_id,
                 },
             });
 
@@ -173,41 +123,85 @@ export const WEBSITES = new Hono<HonoEnv>()
                 );
             }
 
-            return c.json({
-                id:                    website.id,
-                name:                  website.name,
-                url:                   website.url,
-                description:           website.description,
-                page_identifier_rules: website.page_identifier_rules,
+            const page_identifier = formatUrlMatch(website, url);
+            if (!page_identifier) {
+                return c.json(
+                    {
+                        error: `Page URL does not match any identifier rules for this website`,
+                    },
+                    BAD_REQUEST
+                );
+            }
+
+            const comments = await PRISMA.comment.findMany({
+                where: {
+                    website_id,
+                    page_identifier,
+                    author: {
+                        OR: [
+                            {
+                                banned: null,
+                            },
+                            {
+                                banned: false,
+                            },
+                        ],
+                    },
+                },
+                include: {
+                    author: {
+                        select: {
+                            id:   true,
+                            name: true,
+                        },
+                    },
+                },
+                orderBy: {
+                    created_at: `desc`,
+                },
+                // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+                skip: (page - 1) * limit,
+                take: limit,
             });
+
+            return c.json(
+                comments.map((comment) => ({
+                    id:              comment.id,
+                    page_identifier: comment.page_identifier,
+                    content:         comment.content,
+                    created_at:      comment.created_at,
+                    author:          comment.author,
+                }))
+            );
         }
     )
 
-    // Update a website by ID
+    // Update a comment by ID if the user is the author of the comment
     .put(
-        `/:id`,
-        userHasPermission({
-            website: [ `update` ],
+        `/:website_id/:comment_id`,
+        ACL({
+            comments:  [ `update` ],
+            is_banned: false,
         }),
+        withFeatures([ `ALLOW_COMMENT_UPDATES` ]),
         zValidator(
             `param`,
-            z.object({
-                id: z.cuid2(`Invalid website ID format`),
-            })
+            UPDATE_COMMENT_SCHEMA_PARAMS
         ),
         zValidator(
             `json`,
-            CREATE_UPDATE_WEBSITE_SCHEMA
+            UPDATE_COMMENT_SCHEMA
         ),
         async(c) => {
             const {
-                id,
+                website_id,
+                comment_id,
             } = c.req.valid(`param`);
             const data = c.req.valid(`json`);
 
             const website = await PRISMA.website.findUnique({
                 where: {
-                    id,
+                    id: website_id,
                 },
             });
 
@@ -220,71 +214,57 @@ export const WEBSITES = new Hono<HonoEnv>()
                 );
             }
 
-            if (data.url && await PRISMA.website.exists({
-                url: data.url,
-                NOT: {
-                    id,
-                },
-            })) {
+            try {
+                const comment = await PRISMA.comment.update({
+                    where: {
+                        id:        comment_id,
+                        author_id: c.get(`user`)!.id,
+                        website_id,
+                    },
+                    data:  {
+                        content: data.content,
+                    },
+                });
+
                 return c.json(
                     {
-                        error: `Website with this URL already exists`,
-                    },
-                    BAD_REQUEST
+                        id:      comment.id,
+                        content: comment.content,
+                    }
                 );
             }
-
-            if (data.name && await PRISMA.website.exists({
-                name: data.name,
-                NOT:  {
-                    id,
-                },
-            })) {
+            catch (_err) {
                 return c.json(
                     {
-                        error: `Website with this name already exists`,
+                        error: `Comment not found or you are not the author of this comment`,
                     },
-                    BAD_REQUEST
+                    NOT_FOUND
                 );
             }
-
-            const updated_website = await PRISMA.website.update({
-                where: {
-                    id,
-                },
-                data,
-            });
-
-            return c.json({
-                id:                    updated_website.id,
-                name:                  updated_website.name,
-                url:                   updated_website.url,
-                description:           updated_website.description,
-                page_identifier_rules: updated_website.page_identifier_rules,
-            });
         }
     )
 
-    // Delete a website by ID
+    // Delete a comment by ID if the user is the author of the comment
     .delete(
-        `/:id`,
-        userHasPermission({
-            website: [ `delete` ],
+        `/:website_id/:comment_id`,
+        ACL({
+            comments:  [ `delete` ],
+            is_banned: false,
         }),
+        withFeatures([ `ALLOW_COMMENT_DELETION` ]),
         zValidator(
             `param`,
-            z.object({
-                id: z.cuid2(`Invalid website ID format`),
-            })
+            DELETE_COMMENT_SCHEMA_PARAMS
         ),
         async(c) => {
             const {
-                id,
+                website_id,
+                comment_id,
             } = c.req.valid(`param`);
 
             const website = await PRISMA.website.findUnique({
                 where: {
-                    id,
+                    id: website_id,
                 },
             });
 
@@ -297,17 +277,292 @@ export const WEBSITES = new Hono<HonoEnv>()
                 );
             }
 
-            await PRISMA.website.delete({
+            try {
+                const comment = await PRISMA.comment.delete({
+                    where: {
+                        id:        comment_id,
+                        author_id: c.get(`user`)!.id,
+                        website_id,
+                    },
+                });
+
+                return c.json(
+                    {
+                        id:      comment.id,
+                        message: `Comment deleted successfully`,
+                    }
+                );
+            }
+            catch (_err) {
+                return c.json(
+                    {
+                        error: `Comment not found or you are not the author of this comment`,
+                    },
+                    NOT_FOUND
+                );
+            }
+        }
+    )
+
+    // Register an interaction with a comment not owned by the user,
+    // one interaction per comment per user is allowed
+    .put(
+        `/:website_id/:comment_id/interact`,
+        ACL({
+            comments:  [ `interact` ],
+            is_banned: false,
+        }),
+        withFeatures([ `ALLOW_COMMENT_INTERACTIONS` ]),
+        zValidator(
+            `param`,
+            INTERACT_COMMENT_SCHEMA_PARAMS
+        ),
+        zValidator(
+            `json`,
+            INTERACT_COMMENT_SCHEMA
+        ),
+        async(c) => {
+            const {
+                website_id,
+                comment_id,
+            } = c.req.valid(`param`);
+            const {
+                type,
+            } = c.req.valid(`json`);
+
+            const website = await PRISMA.website.findUnique({
                 where: {
-                    id,
+                    id: website_id,
+                },
+            });
+
+            if (!website) {
+                return c.json(
+                    {
+                        error: `Website not found`,
+                    },
+                    NOT_FOUND
+                );
+            }
+
+            await PRISMA.commentInteraction.upsert({
+                where: {
+                    comment_id_user_id: {
+                        user_id: c.get(`user`)!.id,
+                        comment_id,
+                    },
+                },
+                create: {
+                    user_id:   c.get(`user`)!.id,
+                    comment_id,
+                    type,
+                },
+                update: {
+                    type,
                 },
             });
 
             return c.json(
                 {
-                    message: `Website deleted successfully`,
+                    message: `Interaction recorded successfully`,
+                }
+            );
+        }
+    )
+
+    // Get comments for a specific website
+    .get(
+        `/admin/:website_id`,
+        ACL({
+            comments: [ `admin.list` ],
+        }),
+        zValidator(
+            `param`,
+            ADMIN_GET_WEBSITE_COMMENTS_SCHEMA_PARAMS
+        ),
+        zValidator(
+            `query`,
+            ADMIN_GET_WEBSITE_COMMENTS_SCHEMA_QUERY
+        ),
+        async(c) => {
+            const {
+                website_id,
+            } = c.req.valid(`param`);
+            const {
+                page,
+                limit,
+                includes,
+            } = c.req.valid(`query`);
+
+            const website = await PRISMA.website.findUnique({
+                where: {
+                    id: website_id,
+                },
+            });
+
+            if (!website) {
+                return c.json(
+                    {
+                        error: `Website not found`,
+                    },
+                    NOT_FOUND
+                );
+            }
+
+            const comments = await PRISMA.comment.findMany({
+                where: {
+                    website_id,
+
+                    // If includes contains "banned", includes banned authors
+                    ...(
+                        includes?.includes(`banned`)
+                        ? {}
+                        : {
+                            author: {
+                                OR: [
+                                    {
+                                        banned: null,
+                                    },
+                                    {
+                                        banned: false,
+                                    },
+                                ],
+                            },
+                        }
+                    ),
+                },
+                include: {
+                    author: {
+                        select: {
+                            id:   true,
+                            name: true,
+                        },
+                    },
+                    interactions: {
+                        select: {
+                            type:    true,
+                            user_id: true,
+                        },
+                    },
+                },
+                orderBy: {
+                    created_at: `desc`,
+                },
+                // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+                skip: (page - 1) * limit,
+                take: limit,
+            });
+
+            return c.json(
+                comments.map((comment) => ({
+                    id:              comment.id,
+                    page_identifier: comment.page_identifier,
+                    content:         comment.content,
+                    created_at:      comment.created_at,
+                    author:          comment.author,
+                }))
+            );
+        }
+    )
+
+    // Delete a comment by ID
+    .delete(
+        `/admin/:website_id/:comment_id`,
+        ACL({
+            comments: [ `admin.delete` ],
+        }),
+        zValidator(
+            `param`,
+            ADMIN_DELETE_COMMENT_SCHEMA_PARAMS
+        ),
+        async(c) => {
+            const {
+                website_id,
+                comment_id,
+            } = c.req.valid(`param`);
+
+            const website = await PRISMA.website.findUnique({
+                where: {
+                    id: website_id,
+                },
+            });
+
+            if (!website) {
+                return c.json(
+                    {
+                        error: `Website not found`,
+                    },
+                    NOT_FOUND
+                );
+            }
+
+            const comment = await PRISMA.comment.delete({
+                where: {
+                    id: comment_id,
+                    website_id,
+                },
+            });
+
+            return c.json(
+                {
+                    id:      comment.id,
+                    message: `Comment deleted successfully`,
+                }
+            );
+        }
+    )
+
+    // Update a comment by ID
+    .put(
+        `/admin/:website_id/:comment_id`,
+        ACL({
+            comments: [ `admin.update` ],
+        }),
+        zValidator(
+            `param`,
+            ADMIN_UPDATE_COMMENT_SCHEMA_PARAMS
+        ),
+        zValidator(
+            `json`,
+            ADMIN_UPDATE_COMMENT_SCHEMA
+        ),
+        async(c) => {
+            const {
+                website_id,
+                comment_id,
+            } = c.req.valid(`param`);
+            const data = c.req.valid(`json`);
+
+            const website = await PRISMA.website.findUnique({
+                where: {
+                    id: website_id,
+                },
+            });
+
+            if (!website) {
+                return c.json(
+                    {
+                        error: `Website not found`,
+                    },
+                    NOT_FOUND
+                );
+            }
+
+            const comment = await PRISMA.comment.update({
+                where: {
+                    id: comment_id,
+                    website_id,
+                },
+                data: {
+                    content: data.content,
+                },
+            });
+
+            return c.json(
+                {
+                    id:      comment.id,
+                    content: comment.content,
                 }
             );
         }
     );
-

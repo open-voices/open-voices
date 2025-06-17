@@ -32,11 +32,12 @@ export async function setup(): Promise<void> {
         `[ ] Creating default admin user with email: ${ process.env.DEFAULT_ADMIN_EMAIL } and name: ${ admin_name }`
     );
 
-    const user = await auth.api.signUpEmail({
+    const user = await auth.api.createUser({
         body: {
             name:     admin_name,
             email:    process.env.DEFAULT_ADMIN_EMAIL,
             password: process.env.DEFAULT_ADMIN_PASSWORD,
+            role:     `admin`,
         },
     });
     console.warn(`[+] Default admin user created, id: ${ user.user.id }`);

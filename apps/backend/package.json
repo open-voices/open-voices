@@ -4,10 +4,16 @@
         "dev": "bun run --hot src/index.ts"
     },
     "dependencies": {
+        "@hono/zod-validator": "^0.7.0",
+        "@open-voices/transactional": "workspace:*",
+        "@open-voices/validation": "workspace:*",
+        "better-auth": "^1.2.9",
         "hono": "^4.7.11",
         "mjml": "^4.15.3",
         "nodemailer": "^7.0.3",
-        "@open-voices/transactional": "workspace:*"
+        "path-to-regexp": "^8.2.0",
+        "radash": "^12.1.0",
+        "zod": "^3.25.67"
     },
     "devDependencies": {
         "@types/bun": "latest",

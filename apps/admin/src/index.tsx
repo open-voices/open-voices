@@ -11,6 +11,7 @@ import { Login } from "./pages/login";
 const theme = createTheme({
     primaryColor:  "dark",
     fontFamily:    "Ubuntu Sans Mono Variable, monospace",
+    fontFamilyMonospace: "Ubuntu Sans Mono Variable, monospace",
     defaultRadius: "sm",
     headings:      {
         fontWeight: "500",
