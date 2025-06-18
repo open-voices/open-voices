@@ -13,7 +13,7 @@ export default defineConfig({
                 `html`,
             ],
             exclude: [
-                `**/*.{html,js,tsx,config.ts,config.cjs}`,
+                `**/*.{html,js,tsx,config.ts,config.cjs,config.mts}`,
                 `**/generated/**`,
             ],
         },

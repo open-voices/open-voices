@@ -1,5 +1,5 @@
 import type { MiddlewareHandler } from "hono";
-import { makeMiddleware } from "hono/factory";
+import { createMiddleware } from "hono/factory";
 import type {
     InstallationSettingName, Prisma
 } from "../generated/prisma";
@@ -29,8 +29,8 @@ export function withFeatures(feature: Array<SettingsButFirstSetup>): MiddlewareH
 export function checkFeatures(
     feature: Partial<Record<SettingsButFirstSetup, Prisma.JsonValue>>
 ): MiddlewareHandler<HonoEnv> {
-    return makeMiddleware<HonoEnv>(async(c, next) => {
-        const settings = await PRISMA.installationSetting.findMany({
+    return createMiddleware<HonoEnv>(async(c, next) => {
+        const settings = await PRISMA.installationSettings.findMany({
             where: {
                 name: {
                     in: Object.keys(feature) as Array<InstallationSettingName>,
