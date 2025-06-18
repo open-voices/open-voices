@@ -12,7 +12,10 @@ export default defineConfig({
                 `text`,
                 `html`,
             ],
-            exclude: [ `**/*.{html,js,tsx,config.ts,config.cjs}` ],
+            exclude: [
+                `**/*.{html,js,tsx,config.ts,config.cjs}`,
+                `**/generated/**`,
+            ],
         },
     },
 });

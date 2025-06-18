@@ -1,3 +1,4 @@
+/* v8 ignore start */
 import {
     Prisma, PrismaClient
 } from "../generated/prisma";
@@ -19,3 +20,5 @@ export const PRISMA = new PrismaClient().$extends({
         },
     },
 });
+
+/* v8 ignore stop */

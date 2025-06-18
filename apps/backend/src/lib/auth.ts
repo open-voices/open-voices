@@ -1,3 +1,4 @@
+/* v8 ignore start */
 import { compilePasswordResetEmailTemplate } from "@open-voices/transactional/password-reset-email";
 import { compileVerificationEmailTemplate } from "@open-voices/transactional/verification-email";
 import { betterAuth } from "better-auth";
@@ -207,3 +208,4 @@ export const auth = betterAuth({
     ],
 });
 
+/* v8 ignore stop */

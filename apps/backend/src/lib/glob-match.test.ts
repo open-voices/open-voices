@@ -60,4 +60,24 @@ describe("formatUrlMatch", () => {
     } as any;
     expect(formatUrlMatch(websiteWithNoRules, "https://example.com/blog/hello")).toBeNull();
   });
+
+  it("throws HTTPException for invalid page identifier rules", () => {
+    const websiteWithInvalidRules: Website = {
+      id: "test-website-id",
+      page_identifier_rules: [
+        {
+          url: 123, // Invalid: should be string
+          format: "{$1}",
+        },
+        {
+          url: "https://example.com/blog/**",
+          format: null, // Invalid: should be string
+        },
+      ],
+    } as any;
+
+    expect(() => {
+      formatUrlMatch(websiteWithInvalidRules, "https://example.com/blog/test");
+    }).toThrow("Invalid page identifier rules for website test-website-id");
+  });
 });
