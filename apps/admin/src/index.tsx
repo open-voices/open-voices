@@ -3,37 +3,10 @@ import { hydrate, LocationProvider, prerender as ssr, Route, Router } from "prea
 import { FC } from "react";
 
 import { NotFound } from "./pages/_404.jsx";
-import "@fontsource-variable/ubuntu-sans-mono";
-import "./style.css";
 import { Dashboard } from "./pages/dashboard";
 import { Login } from "./pages/login";
-
-const theme = createTheme({
-    primaryColor:  "dark",
-    fontFamily:    "Ubuntu Sans Mono Variable, monospace",
-    fontFamilyMonospace: "Ubuntu Sans Mono Variable, monospace",
-    defaultRadius: "sm",
-    headings:      {
-        fontWeight: "500",
-    },
-    components:    {
-        Card: {
-            classNames: {
-                root: "brutal-card hover:translate[-6px]",
-            },
-        },
-        AppShell: {
-            classNames: {
-                navbar: "brutal-navbar",
-            }
-        },
-        NavLink: {
-            classNames: {
-                root: "brutal-nav-link",
-            }
-        }
-    },
-});
+import "./lib/theme"
+import { theme } from "./lib/theme";
 
 export function App() {
     return (
@@ -57,7 +30,13 @@ export function App() {
 const DashboardRouter: FC = () => {
     return (
         <Router>
-            <Route path={ "/aaaa" }
+            <Route path={ "/websites" }
+                   component={ Dashboard }/>
+            <Route path={ "/comments" }
+                   component={ Dashboard }/>
+            <Route path={ "/users" }
+                   component={ Dashboard }/>
+            <Route path={ "/profile" }
                    component={ Dashboard }/>
             <Route default
                    component={ NotFound }/>

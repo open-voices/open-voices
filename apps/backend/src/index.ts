@@ -39,6 +39,24 @@ const APP = new Hono<HonoEnv>()
             origin:        process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(`,`) : [ `http://localhost:5173` ],
         })
     )
+    .use(
+        `*`,
+        registerUserAndSession
+    )
+    .on(
+        [
+            `POST`,
+            `GET`,
+        ],
+        `/auth/*`,
+        async(c) => await auth.handler(c.req.raw)
+    )
+    .use(
+        `*`,
+        ensureUserIsAuthenticated
+    )
+    .route(`/`, WEBSITES)
+    .route(`/`, COMMENTS)
     .notFound((c) => c.json({
         message: `Resource not found. Please check the URL and try again.`,
     }, NOT_FOUND))
@@ -56,24 +74,6 @@ const APP = new Hono<HonoEnv>()
             INTERNAL_SERVER_ERROR
         );
     })
-    .use(
-        `*`,
-        registerUserAndSession
-    )
-    .on(
-        [
-            `POST`,
-            `GET`,
-        ],
-        `/auth/**`,
-        async(c) => await auth.handler(c.req.raw)
-    )
-    .use(
-        `*`,
-        ensureUserIsAuthenticated
-    )
-    .route(`/`, WEBSITES)
-    .route(`/`, COMMENTS);
 
 export default {
     port:  3000,
