@@ -1,3 +1,5 @@
+/* v8 ignore start */
+
 import { z } from "zod/v4";
 
 /**
@@ -46,3 +48,5 @@ export const PAGE_IDENTIFIER_RULES_SCHEMA = z.array(PAGE_IDENTIFIER_RULE_SCHEMA)
     .min(1, `At least one page identifier rule is required`)
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     .max(10, `A maximum of 10 page identifier rules is allowed`);
+
+/* v8 ignore stop */

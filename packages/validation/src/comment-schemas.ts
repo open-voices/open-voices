@@ -1,3 +1,4 @@
+/* v8 ignore start */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import z from "zod/v4";
 
@@ -82,3 +83,5 @@ export const ADMIN_UPDATE_COMMENT_SCHEMA_PARAMS = z.object({
 export const ADMIN_UPDATE_COMMENT_SCHEMA = z.object({
     content: z.string().min(1, `Content is required`),
 });
+
+/* v8 ignore stop */

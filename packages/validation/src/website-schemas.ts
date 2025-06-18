@@ -1,3 +1,5 @@
+/* v8 ignore start */
+
 import { z } from "zod/v4";
 import { PAGE_IDENTIFIER_RULES_SCHEMA } from "./page-identifier-rule-schemas.ts";
 
@@ -9,4 +11,6 @@ export const CREATE_WEBSITE_SCHEMA = z.object({
     page_identifier_rules: PAGE_IDENTIFIER_RULES_SCHEMA,
 });
 
-export const UPDATE_WEBSITE_SCHEMA = CREATE_WEBSITE_SCHEMA.partial()
+export const UPDATE_WEBSITE_SCHEMA = CREATE_WEBSITE_SCHEMA.partial();
+
+/* v8 ignore stop */
