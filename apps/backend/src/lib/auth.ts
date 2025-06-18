@@ -36,7 +36,11 @@ const DEFAULT_RATE_LIMIT_WINDOW = 60;
 const DEFAULT_RATE_LIMIT_MAX_REQUESTS = 100;
 
 const APP_NAME = process.env.APP_NAME ?? `Open Voices`;
-const DOMAIN = new URL(process.env.BASE_URL ?? `http://localhost:3000`).hostname;
+const DOMAIN = new URL(
+    URL.canParse(process.env.BASE_URL ?? ``)
+    ? process.env.BASE_URL!
+    : `http://localhost:3000`
+).hostname;
 
 export type AccessControlPermissions = Partial<{
     website:   Array<`create` | `read` | `update` | `delete` | `list`>

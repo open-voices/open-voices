@@ -2,11 +2,12 @@ import type { MiddlewareHandler } from "hono";
 import { createMiddleware } from "hono/factory";
 import {
     type AccessControlPermissions, auth
-} from "../lib/auth.ts";
+} from "../lib/auth";
 import {
     FORBIDDEN, UNAUTHORIZED
-} from "../lib/const.ts";
-import type { HonoEnv } from "../types/hono.ts";
+} from "../lib/const";
+import type { HonoEnv } from "../types/hono";
+import { HTTPException } from "hono/http-exception";
 
 /**
  * Middleware to check if the user has the required permissions.
@@ -41,19 +42,29 @@ export function ACL(permissions: Partial<AccessControlPermissions>): MiddlewareH
             permissions.is_banned = undefined;
         }
 
-        const response = await auth.api.userHasPermission({
-            body: {
-                userId:      user.id,
-                permissions,
-            },
-        });
+        try {
+            const response = await auth.api.userHasPermission({
+                body: {
+                    userId:      user.id,
+                    permissions,
+                },
+            });
 
-        if (!response.success) {
-            return c.json({
-                error: `You do not have permissions to perform this action`,
-            }, FORBIDDEN);
+            if (!response.success) {
+                return c.json({
+                    error: `You do not have permissions to perform this action`,
+                }, FORBIDDEN);
+            }
+
+            await next();
         }
-
-        await next();
+        catch (_err) {
+            throw new HTTPException(
+                FORBIDDEN,
+                {
+                    message: `You do not have permissions to perform this action`,
+                }
+            );
+        }
     });
 }

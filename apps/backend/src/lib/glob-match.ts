@@ -11,6 +11,7 @@ import {
 import type { z } from "zod/v4";
 import type { Website } from "../generated/prisma";
 import { INTERNAL_SERVER_ERROR } from "./const.ts";
+import { createId } from "@paralleldrive/cuid2";
 
 const NORMALIZE_INDEX = 1;
 
@@ -22,8 +23,14 @@ const NORMALIZE_INDEX = 1;
 function globToRegexpPattern(glob: string): string {
     // Replace ** with :param(.*) and * with :param([^/]+)
     return glob
-        .replace(/\*\*/g, `:param(.*)`)
-        .replace(/\*/g, `:param([^/]+)`);
+        .replace(/(?<!\*)\*(?!\*)/g, () => {
+            const param_name = createId();
+            return `:${ param_name }`;
+        })
+        .replace(/\*\*/g, () => {
+            const param_name = createId();
+            return `*${ param_name }`;
+        });
 }
 
 /**
@@ -33,11 +40,14 @@ function globToRegexpPattern(glob: string): string {
  * @returns {Array<string> | null}
  */
 function extractMatches(pattern: string, url: string): Array<string> {
+    pattern = pattern.replace(/:/g, ``);
+
     const regexp_pattern = globToRegexpPattern(pattern);
     const matcher = match(regexp_pattern, {
         decode: decodeURIComponent,
     });
-    const result = matcher(url);
+
+    const result = matcher(url.replace(/:/g, ``));
     if (!result) {
         return [];
     }
@@ -106,6 +116,7 @@ export function formatUrlMatch(
     const {
         format,
     } = matches.best_rule;
+    
     const formatted = format.replaceAll(
         PAGE_IDENTIFIER_FORMAT_REPLACEMENT_REGEX,
         // eslint-disable-next-line @typescript-eslint/max-params
