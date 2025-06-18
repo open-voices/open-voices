@@ -10,6 +10,10 @@ import { COMMENTS } from "./routes/comments.ts";
 import { WEBSITES } from "./routes/websites.ts";
 import { setup } from "./setup.ts";
 import type { HonoEnv } from "./types/hono.ts";
+import { HTTPException } from "hono/http-exception";
+import {
+    INTERNAL_SERVER_ERROR, NOT_FOUND
+} from "./lib/const.ts";
 
 await setup();
 
@@ -35,6 +39,23 @@ const APP = new Hono<HonoEnv>()
             origin:        process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(`,`) : [ `http://localhost:5173` ],
         })
     )
+    .notFound((c) => c.json({
+        message: `Resource not found. Please check the URL and try again.`,
+    }, NOT_FOUND))
+    .onError((err, c) => {
+        console.error(`Error in Hono app:`, err);
+
+        if (err instanceof HTTPException) {
+            return err.getResponse();
+        }
+
+        return c.json(
+            {
+                message: `Something went wrong, please try again later.`,
+            },
+            INTERNAL_SERVER_ERROR
+        );
+    })
     .use(
         `*`,
         registerUserAndSession
