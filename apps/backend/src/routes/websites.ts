@@ -1,5 +1,7 @@
 import { zValidator } from "@hono/zod-validator";
-import { CREATE_WEBSITE_SCHEMA, UPDATE_WEBSITE_SCHEMA } from "@open-voices/validation/website-schemas";
+import {
+    CREATE_WEBSITE_SCHEMA, UPDATE_WEBSITE_SCHEMA
+} from "@open-voices/validation/website-schemas";
 import { Hono } from "hono";
 import z from "zod/v4";
 import {
@@ -14,7 +16,7 @@ export const WEBSITES = new Hono<HonoEnv>()
 
     // Create a new website
     .post(
-        ``,
+        `/`,
         ACL({
             website: [ `create` ],
         }),
@@ -71,7 +73,7 @@ export const WEBSITES = new Hono<HonoEnv>()
 
     // Get all websites
     .get(
-        ``,
+        `/`,
         ACL({
             website: [ `list` ],
         }),

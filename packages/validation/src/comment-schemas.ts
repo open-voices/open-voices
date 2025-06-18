@@ -58,10 +58,12 @@ export const ADMIN_GET_WEBSITE_COMMENTS_SCHEMA_PARAMS = z.object({
 });
 
 export const ADMIN_GET_WEBSITE_COMMENTS_SCHEMA_QUERY = z.object({
-    page:     z.coerce.number().int()
+    page:     z.coerce.number()
+        .int()
         .min(1)
         .default(1),
-    limit:    z.coerce.number().int()
+    limit:    z.coerce.number()
+        .int()
         .min(1)
         .max(100)
         .default(10),

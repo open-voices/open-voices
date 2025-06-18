@@ -1,3 +1,4 @@
+/* v8 ignore start */
 import { createAuthClient } from "better-auth/client";
 import { adminClient } from "better-auth/client/plugins";
 
@@ -19,3 +20,5 @@ export const AUTH_CLIENT = createAuthClient({
     },
     plugins: [ adminClient() ],
 });
+
+/* v8 ignore stop */
