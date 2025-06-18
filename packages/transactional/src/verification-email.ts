@@ -1,3 +1,4 @@
+/* eslint-disable @stylistic/js/max-len */
 import { template } from "radash";
 
 const VERIFICATION_EMAIL_TEMPLATE = `<mjml>
