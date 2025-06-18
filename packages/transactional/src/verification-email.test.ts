@@ -81,7 +81,7 @@ describe("compileVerificationEmailTemplate", () => {
     expect(result).toContain("<mjml>");
     expect(result).toContain("</mjml>");
     expect(result).toContain("<mj-head>");
-    expect(result).toContain("<mj-body>");
+    expect(result).toContain("<mj-body");
     expect(result).toContain("<mj-button");
   });
 });
