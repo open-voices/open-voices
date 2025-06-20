@@ -1,0 +1,1 @@
+export const WEBSITE_QUERY_KEY = `websites` as const;

@@ -2,6 +2,8 @@
 import { createAuthClient } from "better-auth/client";
 import { adminClient } from "better-auth/client/plugins";
 import { makeOpenVoicesClient } from "@open-voices/backend/client";
+import { QueryClient } from "@tanstack/react-query";
+import { dayjs } from "./dayjs";
 
 const TOO_MANY_REQUESTS = 429;
 
@@ -28,5 +30,21 @@ export const API_CLIENT = makeOpenVoicesClient(
     },
   }
 );
+
+export const QUERY_CLIENT = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnMount: true,
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
+      networkMode: "online",
+      gcTime: dayjs.duration({minutes: 5}).asMilliseconds(),
+    },
+    mutations: {
+      networkMode: "online",
+      gcTime: dayjs.duration({minutes: 5}).asMilliseconds(),
+    }
+  },
+})
 
 /* v8 ignore stop */

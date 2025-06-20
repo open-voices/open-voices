@@ -13,27 +13,34 @@ import { Comments } from "./pages/comments";
 import { Users } from "./pages/users";
 import { Profile } from "./pages/profile";
 import { NotFound } from "./pages/_404";
-import { ModalsProvider } from '@mantine/modals';
+import { ModalsProvider } from "@mantine/modals";
+import { MODAL_REGISTRY } from "./components/modals/registry";
+import {
+  QueryClientProvider,
+} from '@tanstack/react-query'
+import { QUERY_CLIENT } from "./lib/client";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <MantineProvider theme={theme}>
-      <BrowserRouter>
-        <Notifications />
-        <ModalsProvider>
-          <Routes>
-            <Route index element={<Login />} />
-            <Route path={"dashboard"} element={<DashboardLayout />}>
-              <Route index element={<Dashboard />} />
-              <Route path={"websites"} element={<Websites />} />
-              <Route path={"comments"} element={<Comments />} />
-              <Route path={"users"} element={<Users />} />
-              <Route path={"profile"} element={<Profile />} />
-            </Route>
-            <Route path={"*"} element={<NotFound />} />
-          </Routes>
-        </ModalsProvider>
-      </BrowserRouter>
-    </MantineProvider>
+    <QueryClientProvider client={QUERY_CLIENT}>
+      <MantineProvider theme={theme}>
+        <BrowserRouter>
+          <Notifications position="top-right" />
+          <ModalsProvider modals={MODAL_REGISTRY}>
+            <Routes>
+              <Route index element={<Login />} />
+              <Route path={"dashboard"} element={<DashboardLayout />}>
+                <Route index element={<Dashboard />} />
+                <Route path={"websites"} element={<Websites />} />
+                <Route path={"comments"} element={<Comments />} />
+                <Route path={"users"} element={<Users />} />
+                <Route path={"profile"} element={<Profile />} />
+              </Route>
+              <Route path={"*"} element={<NotFound />} />
+            </Routes>
+          </ModalsProvider>
+        </BrowserRouter>
+      </MantineProvider>
+    </QueryClientProvider>
   </StrictMode>
 );

@@ -80,6 +80,14 @@
         }
     }
 
+    .brutal-button-inverted {
+        @apply text-black bg-white border-2 border-solid border-black transition-all duration-200 ease-in-out brutal-filter-none;
+
+        &:hover {
+            @apply brutal-filter-sm;
+        }
+    }
+
     .brutal-table[data-with-table-border="true"] {
         @apply border-2 border-solid border-black;
 
