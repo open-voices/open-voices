@@ -1,7 +1,14 @@
 {
     "name": "@open-voices/backend",
     "scripts": {
-        "dev": "bun run --hot src/index.ts"
+        "dev": "bun run --hot src/index.ts",
+        "build": "tsc -p tsconfig.build.json"
+    },
+    "exports": {
+        "./client": {
+            "import": "./dist/client.js",
+            "types": "./dist/client.d.ts"
+        }
     },
     "dependencies": {
         "@hono/zod-validator": "^0.7.0",
