@@ -1,4 +1,4 @@
-import { zValidator } from "@hono/zod-validator";
+import { zValidator } from "../middlewares/custom-zod-validator";
 import {
     CREATE_WEBSITE_SCHEMA,
     UPDATE_WEBSITE_SCHEMA

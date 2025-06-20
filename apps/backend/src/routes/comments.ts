@@ -1,4 +1,3 @@
-import { zValidator } from "@hono/zod-validator";
 import {
     ADMIN_DELETE_COMMENT_SCHEMA_PARAMS,
     ADMIN_GET_WEBSITE_COMMENTS_SCHEMA_PARAMS,
@@ -25,6 +24,7 @@ import { PRISMA } from "../lib/prisma";
 import { ACL } from "../middlewares/acl";
 import { withFeatures } from "../middlewares/with-features";
 import type { HonoEnv } from "../types/hono";
+import { zValidator } from "../middlewares/custom-zod-validator";
 
 const ADMIN_COMMENTS = new Hono<HonoEnv>()
     .basePath(`admin`)
