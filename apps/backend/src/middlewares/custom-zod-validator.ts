@@ -10,7 +10,7 @@ import type {
 import { validator } from "hono/validator";
 import { BAD_REQUEST } from '../lib/const';
 
-type HasUndefined<T> = undefined extends T ? true : false
+type HasUndefined<T> = undefined extends T ? true : false;
 
 export function zValidator<
     T extends ZodType,
@@ -33,7 +33,7 @@ export function zValidator<
       }
         out: Record<Target, Out>
     },
-    V extends I = I,
+    V extends I = I
 >(
     target: Target,
     schema: T

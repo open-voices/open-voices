@@ -15,17 +15,17 @@
         "@open-voices/validation": "workspace:*",
         "@paralleldrive/cuid2": "^2.2.2",
         "better-auth": "^1.2.9",
-        "hono": "^4.7.11",
+        "hono": "^4.8.1",
         "mjml": "^4.15.3",
         "nodemailer": "^7.0.3",
         "path-to-regexp": "^8.2.0",
-        "radash": "^12.1.0",
+        "radash": "^12.1.1",
         "zod": "^3.25.67"
     },
     "devDependencies": {
         "@types/bun": "latest",
         "@types/mjml": "^4.7.4",
         "@types/nodemailer": "^6.4.17",
-        "prisma": "^6.9.0"
+        "prisma": "^6.10.1"
     }
 }
