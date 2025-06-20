@@ -3,8 +3,8 @@ import { Title, Text, Card, Button, Group, ActionIcon } from "@mantine/core";
 import { DataTable, type DataTableSortStatus } from "mantine-datatable";
 import { API_CLIENT } from "../lib/client";
 import type {
+  GetWebsitesListResponse,
   Website,
-  Websites,
   Websites as WebsitesType,
 } from "../types/website";
 import {
@@ -18,17 +18,35 @@ import {
 import { modals } from "@mantine/modals";
 import { useQuery } from "@tanstack/react-query";
 import { WEBSITE_QUERY_KEY } from "../lib/const";
-import sortBy from "lodash/sortBy";
+import { ADVANCED_QUERY_SCHEMA } from "@open-voices/validation/advanced-schemas";
+import { z } from "zod/v4";
+import { parametrizeAdvancedQuery } from "../lib/parametrize-advanced-query";
 
-async function getWebsites(): Promise<WebsitesType> {
-  const response = await API_CLIENT.api.websites.$get();
+type Schema = z.infer<typeof ADVANCED_QUERY_SCHEMA>;
+
+async function getWebsites(
+  page: number,
+  limit: number,
+  sort?: Schema["sort"],
+  filters: Schema["filters"] = []
+) {
+  const query: Schema = {
+    page,
+    limit,
+    filters,
+    sort,
+  };
+
+  const response = await API_CLIENT.api.websites.$get({
+    query: parametrizeAdvancedQuery(query),
+  });
 
   if (response.status !== 200) {
-    return [];
+    return {} as GetWebsitesListResponse;
   }
 
   const data = await response.json();
-  return data as unknown as WebsitesType;
+  return data;
 }
 
 function openCreateWebsiteModal() {
@@ -41,21 +59,38 @@ function openCreateWebsiteModal() {
 }
 
 export const Websites: FC = () => {
-  const { data: websites } = useQuery({
-    queryKey: [WEBSITE_QUERY_KEY],
-    queryFn: getWebsites,
-  });
-
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus<Website>>({
     columnAccessor: "name",
     direction: "asc",
   });
-  const [records, setRecords] = useState(sortBy(websites, "name"));
 
+  const { data: websites, isLoading } = useQuery({
+    queryKey: [WEBSITE_QUERY_KEY, page, limit, sortStatus],
+    queryFn: () =>
+      getWebsites(
+        page,
+        limit,
+        {
+          by: sortStatus.columnAccessor,
+          direction: sortStatus.direction,
+        },
+        []
+      ),
+  });
+  const [records, setRecords] = useState<WebsitesType>([]);
+
+  // Fetch websites and set records when the page or limit changes
   useEffect(() => {
-    const data = sortBy(websites, sortStatus.columnAccessor) as Websites;
-    setRecords(sortStatus.direction === "desc" ? data.reverse() : data);
-  }, [sortStatus, websites]);
+    setRecords((websites?.websites ?? []) as WebsitesType);
+  }, [websites]);
+
+  // Initial load to set records
+  // This is to ensure that the records are set when the component mounts
+  useEffect(() => {
+    setRecords((websites?.websites ?? []) as WebsitesType);
+  }, []);
 
   return (
     <>
@@ -173,13 +208,19 @@ export const Websites: FC = () => {
               </Button>
             </div>
           }
+          fetching={isLoading}
           sortStatus={sortStatus}
           onSortStatusChange={setSortStatus}
           sortIcons={{
             sorted: <IconChevronUp size={14} />,
             unsorted: <IconSelector size={14} />,
           }}
-
+          totalRecords={websites?.total ?? 0}
+          recordsPerPage={limit}
+          page={page}
+          onPageChange={(p) => setPage(p)}
+          recordsPerPageOptions={[10, 15, 20, 25, 50]}
+          onRecordsPerPageChange={setLimit}
         />
       </Card>
     </>
