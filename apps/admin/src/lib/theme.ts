@@ -35,6 +35,19 @@ export const theme = createTheme({
             classNames: {
                 input: "brutal-checkbox",
             }
+        },
+        Button: {
+            classNames: {
+                root: "brutal-button",
+            },
+        },
+        Table: {
+            classNames: {
+                table: "brutal-table",
+                tr: "brutal-table-row",
+                td: "brutal-table-cell",
+                th: "brutal-table-heading",
+            },
         }
     },
 });

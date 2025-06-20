@@ -14,7 +14,7 @@ import {
   IconUserCog,
   IconWorldCog,
 } from "@tabler/icons-react";
-import { Outlet, useNavigate } from "react-router";
+import { Outlet, useLocation, useNavigate } from "react-router";
 import { type FC, useEffect } from "react";
 import { AUTH_CLIENT } from "../lib/client";
 import { NavLink as ReactRouterNavLink } from "react-router";
@@ -22,6 +22,7 @@ import { NavLink as ReactRouterNavLink } from "react-router";
 export const DashboardLayout: FC = () => {
   const [is_loading, setIsLoading] = useToggle();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     setIsLoading(true);
@@ -62,35 +63,35 @@ export const DashboardLayout: FC = () => {
         </AppShell.Section>
         <AppShell.Section grow my="md" component={ScrollArea}>
           <NavLink
-            to={"/dashboard"}
-            component={ReactRouterNavLink}
+            href={"/dashboard"}
             label="Home"
+            active={location.pathname === "/dashboard"}
             leftSection={<IconLayoutDashboard />}
           />
           <NavLink
-            to={"/dashboard/websites"}
-            component={ReactRouterNavLink}
+            href={"/dashboard/websites"}
             label="Websites"
+            active={location.pathname === "/dashboard/websites"}
             leftSection={<IconWorldCog />}
           />
           <NavLink
-            to={"/dashboard/comments"}
-            component={ReactRouterNavLink}
+            href={"/dashboard/comments"}
             label="Comments"
+            active={location.pathname === "/dashboard/comments"}
             leftSection={<IconMessages />}
           />
           <NavLink
-            to={"/dashboard/users"}
-            component={ReactRouterNavLink}
+            href={"/dashboard/users"}
             label="User Management"
+            active={location.pathname === "/dashboard/users"}
             leftSection={<IconUserCog />}
           />
         </AppShell.Section>
         <AppShell.Section>
           <NavLink
-            to={"/dashboard/profile"}
-            component={ReactRouterNavLink}
+            href={"/dashboard/profile"}
             label="My Profile"
+            active={location.pathname === "/dashboard/profile"}
             className={"no-animation"}
             leftSection={<IconUserCircle />}
           />

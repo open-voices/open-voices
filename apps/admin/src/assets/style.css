@@ -29,10 +29,6 @@
 @layer components {
     .brutal-card {
         @apply bg-white border-4 border-solid border-black transition-all duration-200 ease-in-out brutal-filter;
-
-        &:hover {
-            @apply brutal-filter-none;
-        }
     }
 
     .brutal-dialog {
@@ -73,6 +69,50 @@
 
         &:checked + svg {
             @apply text-black;
+        }
+    }
+
+    .brutal-button {
+        @apply text-black bg-white border-2 border-solid border-black transition-all duration-200 ease-in-out brutal-filter-sm;
+
+        &:hover {
+            @apply brutal-filter-none;
+        }
+    }
+
+    .brutal-table[data-with-table-border="true"] {
+        @apply border-2 border-solid border-black;
+
+        & th, & td {
+            @apply border-2 border-solid border-black;
+        }
+    }
+
+    .brutal-table-row[data-with-row-border="true"] {
+        @apply border-b-2 border-solid border-black;
+
+        &:last-child {
+            @apply border-b-0;
+
+            & .brutal-table-cell[data-with-column-border="true"] {
+                @apply border-b-0;
+            }
+        }
+    }
+
+    .brutal-table-cell[data-with-column-border="true"] {
+        @apply border-b-2 border-r-2 border-solid border-black;
+
+        &:last-child {
+            @apply border-r-0;
+        }
+    }
+
+    .brutal-table-heading[data-with-column-border="true"] {
+        @apply border-b-2 border-r-2 border-solid border-black;
+
+        &:last-child {
+            @apply border-r-0;
         }
     }
 }
