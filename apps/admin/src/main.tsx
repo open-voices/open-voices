@@ -13,23 +13,26 @@ import { Comments } from "./pages/comments";
 import { Users } from "./pages/users";
 import { Profile } from "./pages/profile";
 import { NotFound } from "./pages/_404";
+import { ModalsProvider } from '@mantine/modals';
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <MantineProvider theme={theme}>
       <BrowserRouter>
-      <Notifications />
-      <Routes>
-        <Route index element={<Login />} />
-        <Route path={"dashboard"} element={<DashboardLayout />}>
-          <Route index element={<Dashboard/>} />
-          <Route path={"websites"} element={<Websites />} />
-          <Route path={"comments"} element={<Comments/>} />
-          <Route path={"users"} element={<Users/>} />
-          <Route path={"profile"} element={<Profile/>} />
-        </Route>
-        <Route path={"*"} element={<NotFound/>} />
-      </Routes>
+        <Notifications />
+        <ModalsProvider>
+          <Routes>
+            <Route index element={<Login />} />
+            <Route path={"dashboard"} element={<DashboardLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path={"websites"} element={<Websites />} />
+              <Route path={"comments"} element={<Comments />} />
+              <Route path={"users"} element={<Users />} />
+              <Route path={"profile"} element={<Profile />} />
+            </Route>
+            <Route path={"*"} element={<NotFound />} />
+          </Routes>
+        </ModalsProvider>
       </BrowserRouter>
     </MantineProvider>
   </StrictMode>

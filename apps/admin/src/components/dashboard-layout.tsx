@@ -50,7 +50,7 @@ export const DashboardLayout: FC = () => {
         breakpoint: 0,
       }}
     >
-      <AppShell.Navbar className={"space-y-4 p-4"}>
+      <AppShell.Navbar className={"space-y-4 p-4 select-none"}>
         <AppShell.Section>
           <Title className="text-center">Open Voices</Title>
           <Title

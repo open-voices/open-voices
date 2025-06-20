@@ -28,6 +28,8 @@
         "@mantine/hooks": "^8.1.1",
         "@mantine/modals": "^8.1.1",
         "@mantine/notifications": "^8.1.1",
+        "@open-voices/backend": "workspace:*",
+        "@open-voices/validation": "workspace:*",
         "@tabler/icons-react": "^3.34.0",
         "@tailwindcss/vite": "^4.1.10",
         "better-auth": "^1.2.9",
