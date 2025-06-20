@@ -1,11 +1,11 @@
 import { Button, Card, Center, Checkbox, Loader, TextInput, Title } from "@mantine/core";
-import { useForm, UseFormReturnType } from "@mantine/form";
+import { useForm, type UseFormReturnType } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
 import { zod4Resolver } from "mantine-form-zod-resolver";
-import { LocationHook, useLocation } from "preact-iso";
-import { FC, useEffect } from "react";
+import { type FC, useEffect } from "react";
 import { z } from "zod/v4";
 import { AUTH_CLIENT } from "../lib/client";
+import { useNavigate, type NavigateFunction } from "react-router";
 
 const schema = z.object({
     email:       z.email("Invalid email address"),
@@ -13,7 +13,7 @@ const schema = z.object({
     remember_me: z.boolean().optional(),
 });
 
-function makeHandleSubmit(form: UseFormReturnType<z.infer<typeof schema>>, location: LocationHook) {
+function makeHandleSubmit(form: UseFormReturnType<z.infer<typeof schema>>, navigate: NavigateFunction) {
     return async function handleSubmit(values: z.infer<typeof schema>) {
         const response = await AUTH_CLIENT.signIn.email({
             email:      values.email,
@@ -26,7 +26,7 @@ function makeHandleSubmit(form: UseFormReturnType<z.infer<typeof schema>>, locat
             return;
         }
 
-        location.route("/dashboard")
+        navigate("/dashboard")
     };
 }
 
@@ -42,13 +42,13 @@ export const Login: FC = () => {
         validate:      zod4Resolver(schema),
     }) as unknown as UseFormReturnType<z.infer<typeof schema>>;
 
-    const location = useLocation()
+    const navigate = useNavigate()
 
     useEffect(() => {
         setIsLoading(true)
         AUTH_CLIENT.getSession().then((session) => {
             if(session && !session.error && !!session.data) {
-                location.route("/dashboard");
+                navigate("/dashboard");
                 return;
             }
             setIsLoading(false)
@@ -71,7 +71,7 @@ export const Login: FC = () => {
                         Admin Sign In
                     </Title>
                 </div>
-                <form onSubmit={ form.onSubmit(makeHandleSubmit(form, location)) }
+                <form onSubmit={ form.onSubmit(makeHandleSubmit(form, navigate)) }
                       className={ "space-y-3 flex flex-col" }>
                     {
                         is_loading && <Loader className={"mx-auto"}/>

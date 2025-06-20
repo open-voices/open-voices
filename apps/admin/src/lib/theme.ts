@@ -1,6 +1,6 @@
 import { createTheme } from "@mantine/core";
 import "@fontsource-variable/ubuntu-sans-mono";
-import "../style.css";
+import "../assets/style.css";
 
 export const theme = createTheme({
     primaryColor:  "dark",

@@ -1,8 +1,11 @@
-@layer theme, base, mantine, components, utilities;
+@layer theme, base, mantine, mantine-datatable, components, utilities;
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/preflight.css" layer(base);
 @import "tailwindcss/utilities.css" layer(utilities);
 @import "@mantine/core/styles.layer.css";
+@import "@mantine/notifications/styles.layer.css";
+@import "mantine-datatable/styles.layer.css";
+
 
 @theme {
     --font-mono: "Ubuntu Sans Mono Variable", monospace;

@@ -1,9 +1,9 @@
 import { type FC } from "react";
 
-export const Dashboard: FC = () => {
+export const Users: FC = () => {
     return (
         <>
-            Welcome to the Dashboard!
+            Welcome to the Users!
         </>
     );
 };
