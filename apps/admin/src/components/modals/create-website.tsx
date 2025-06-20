@@ -40,7 +40,7 @@ async function createWebsite(
     }
     notifications.show({
       title: "Cannot create website",
-      message: error_data.error,
+      message: error_data.error ?? (error_data as any).message ?? "An unknown error occurred.",
     });
     return;
   }
