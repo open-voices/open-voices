@@ -36,6 +36,7 @@
         "better-auth": "^1.2.9",
         "clsx": "^2.1.1",
         "dayjs": "^1.11.13",
+        "lodash": "^4.17.21",
         "mantine-datatable": "^8.1.1",
         "mantine-form-zod-resolver": "^1.2.1",
         "react": "^19.1.0",

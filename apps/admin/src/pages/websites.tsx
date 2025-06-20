@@ -1,12 +1,24 @@
 import { useEffect, useState, type FC } from "react";
-import { Title, Text, Card, Button } from "@mantine/core";
-import { DataTable } from "mantine-datatable";
+import { Title, Text, Card, Button, Group, ActionIcon } from "@mantine/core";
+import { DataTable, type DataTableSortStatus } from "mantine-datatable";
 import { API_CLIENT } from "../lib/client";
-import type { Websites as WebsitesType } from "../types/website";
-import { IconDatabaseExclamation } from "@tabler/icons-react";
+import type {
+  Website,
+  Websites,
+  Websites as WebsitesType,
+} from "../types/website";
+import {
+  IconChevronUp,
+  IconDatabaseExclamation,
+  IconEdit,
+  IconEye,
+  IconSelector,
+  IconTrash,
+} from "@tabler/icons-react";
 import { modals } from "@mantine/modals";
 import { useQuery } from "@tanstack/react-query";
 import { WEBSITE_QUERY_KEY } from "../lib/const";
+import sortBy from "lodash/sortBy";
 
 async function getWebsites(): Promise<WebsitesType> {
   const response = await API_CLIENT.api.websites.$get();
@@ -34,6 +46,17 @@ export const Websites: FC = () => {
     queryFn: getWebsites,
   });
 
+  const [sortStatus, setSortStatus] = useState<DataTableSortStatus<Website>>({
+    columnAccessor: "name",
+    direction: "asc",
+  });
+  const [records, setRecords] = useState(sortBy(websites, "name"));
+
+  useEffect(() => {
+    const data = sortBy(websites, sortStatus.columnAccessor) as Websites;
+    setRecords(sortStatus.direction === "desc" ? data.reverse() : data);
+  }, [sortStatus, websites]);
+
   return (
     <>
       <div className="flex items-center justify-between mbb-4">
@@ -59,9 +82,7 @@ export const Websites: FC = () => {
           withColumnBorders
           striped
           highlightOnHover
-          // provide data
-          records={websites}
-          // define columns
+          records={records}
           columns={[
             {
               accessor: "id",
@@ -69,22 +90,64 @@ export const Websites: FC = () => {
               title: "#",
               // right-align column
               textAlign: "right",
-              width: "13rem",
+              width: 150,
+              ellipsis: true,
             },
             {
               accessor: "name",
+              width: 300,
+              sortable: true,
+              ellipsis: true,
             },
             {
               accessor: "url",
+              width: 300,
+              sortable: true,
+              ellipsis: true,
             },
             {
               accessor: "description",
-              width: "25%",
               render(record) {
                 return (
                   <Text c="dimmed" className={"whitespace-pre-line text-sm"}>
                     {record.description || "No description available"}
                   </Text>
+                );
+              },
+            },
+            {
+              accessor: "actions",
+              title: "",
+              width: 150,
+              textAlign: "right",
+              render(record) {
+                return (
+                  <Group gap={4} justify="right" wrap="nowrap">
+                    <ActionIcon
+                      size="sm"
+                      variant="subtle"
+                      color="green"
+                      onClick={() => {}}
+                    >
+                      <IconEye size={16} />
+                    </ActionIcon>
+                    <ActionIcon
+                      size="sm"
+                      variant="subtle"
+                      color="blue"
+                      onClick={() => {}}
+                    >
+                      <IconEdit size={16} />
+                    </ActionIcon>
+                    <ActionIcon
+                      size="sm"
+                      variant="subtle"
+                      color="red"
+                      onClick={() => {}}
+                    >
+                      <IconTrash size={16} />
+                    </ActionIcon>
+                  </Group>
                 );
               },
             },
@@ -110,6 +173,13 @@ export const Websites: FC = () => {
               </Button>
             </div>
           }
+          sortStatus={sortStatus}
+          onSortStatusChange={setSortStatus}
+          sortIcons={{
+            sorted: <IconChevronUp size={14} />,
+            unsorted: <IconSelector size={14} />,
+          }}
+
         />
       </Card>
     </>

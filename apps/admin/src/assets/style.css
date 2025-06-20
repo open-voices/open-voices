@@ -16,6 +16,10 @@
     filter: drop-shadow(4px 4px 0px #000);
 }
 
+@utility brutal-filter-md {
+    @apply brutal-filter
+}
+
 @utility brutal-filter-sm {
     @apply bg-white;
     filter: drop-shadow(2px 2px 0px #000);
@@ -36,8 +40,9 @@
     }
 
     .brutal-navbar {
-        @apply bg-white border-4 border-solid border-black rounded-xl my-1 ml-1 brutal-filter;
+        @apply bg-white border-4 border-solid border-black my-1 ml-1 brutal-filter;
         height: calc(100dvh - var(--spacing) * 3);
+        border-radius: var(--mantine-radius-default);
     }
 
     .brutal-nav-link:not([data-active="true"]) {
