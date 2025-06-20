@@ -22,10 +22,10 @@ vi.mock("../lib/prisma", () => {
   };
 });
 
-vi.mock("../middlewares/acl.ts", () => {
+vi.mock("../middlewares/acl", () => {
   const ACL = () => async (c: any, next: any) => next();
   return {
-      ACL: vi.fn(ACL),
+    ACL: vi.fn(ACL),
   };
 });
 
@@ -253,20 +253,24 @@ describe("WEBSITES router", () => {
       name: "Old Name",
       url: "https://old.com",
       description: "Old description",
-      page_identifier_rules: [{
+      page_identifier_rules: [
+        {
           url: "https://example.com/blog/**",
           format: "{dash($1)}",
-        },],
+        },
+      ],
     };
 
     const updateData = {
       name: "New Name",
       url: "https://new.com",
       description: "New description",
-      page_identifier_rules: [{
+      page_identifier_rules: [
+        {
           url: "https://example.com/blog/**",
           format: "{snake($1)}",
-        },],
+        },
+      ],
     };
 
     it("should update website successfully", async () => {
@@ -470,17 +474,19 @@ describe("WEBSITES router", () => {
         name: "Test Website",
         url: "https://example.com",
         description: "A test website",
-        page_identifier_rules: [{
-          url: "https://example.com/blog/**",
-          format: "{dash($1)}",
-        },],
+        page_identifier_rules: [
+          {
+            url: "https://example.com/blog/**",
+            format: "{dash($1)}",
+          },
+        ],
       };
 
       await expect(
         client.websites.$post({ json: validWebsiteData })
       ).resolves.toBeTruthy();
 
-      const response = await client.websites.$post({ json: validWebsiteData })
+      const response = await client.websites.$post({ json: validWebsiteData });
       expect(response.status).toBe(500);
     });
 
@@ -491,7 +497,7 @@ describe("WEBSITES router", () => {
 
       await expect(client.websites.$get()).resolves.toBeTruthy();
 
-      const response = await client.websites.$get()
+      const response = await client.websites.$get();
       expect(response.status).toBe(500);
     });
 
@@ -517,9 +523,9 @@ describe("WEBSITES router", () => {
       ).resolves.toBeTruthy();
 
       const response = await client.websites[":id"].$put({
-          param: { id: websiteId },
-          json: { name: "New Name" },
-        })
+        param: { id: websiteId },
+        json: { name: "New Name" },
+      });
       expect(response.status).toBe(500);
     });
   });

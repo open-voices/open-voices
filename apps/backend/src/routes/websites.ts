@@ -1,35 +1,36 @@
 import { zValidator } from "@hono/zod-validator";
 import {
-    CREATE_WEBSITE_SCHEMA, UPDATE_WEBSITE_SCHEMA
+    CREATE_WEBSITE_SCHEMA,
+    UPDATE_WEBSITE_SCHEMA
 } from "@open-voices/validation/website-schemas";
 import { Hono } from "hono";
 import z from "zod/v4";
 import {
-    BAD_REQUEST, CREATED,  NOT_FOUND
-} from "../lib/const.ts";
-import { PRISMA } from "../lib/prisma.ts";
-import { ACL } from "../middlewares/acl.ts";
-import type { HonoEnv } from "../types/hono.ts";
+    BAD_REQUEST, CREATED, NOT_FOUND,
+    OK
+} from "../lib/const";
+import { PRISMA } from "../lib/prisma";
+import { ACL } from "../middlewares/acl";
+import type { HonoEnv } from "../types/hono";
 
 export const WEBSITES = new Hono<HonoEnv>()
     .basePath(`websites`)
 
-    // Create a new website
+// Create a new website
     .post(
         `/`,
         ACL({
             website: [ `create` ],
         }),
-        zValidator(
-            `json`,
-            CREATE_WEBSITE_SCHEMA
-        ),
+        zValidator(`json`, CREATE_WEBSITE_SCHEMA),
         async(c) => {
             const data = c.req.valid(`json`);
 
-            if (await PRISMA.website.exists({
-                url: data.url,
-            })) {
+            if (
+                await PRISMA.website.exists({
+                    url: data.url,
+                })
+            ) {
                 return c.json(
                     {
                         error: `Website with this URL already exists`,
@@ -38,9 +39,11 @@ export const WEBSITES = new Hono<HonoEnv>()
                 );
             }
 
-            if (await PRISMA.website.exists({
-                name: data.name,
-            })) {
+            if (
+                await PRISMA.website.exists({
+                    name: data.name,
+                })
+            ) {
                 return c.json(
                     {
                         error: `Website with this name already exists`,
@@ -71,7 +74,7 @@ export const WEBSITES = new Hono<HonoEnv>()
         }
     )
 
-    // Get all websites
+// Get all websites
     .get(
         `/`,
         ACL({
@@ -85,20 +88,19 @@ export const WEBSITES = new Hono<HonoEnv>()
             });
 
             return c.json(
-                websites.map((website) => (
-                    {
-                        id:                    website.id,
-                        name:                  website.name,
-                        url:                   website.url,
-                        description:           website.description,
-                        page_identifier_rules: website.page_identifier_rules,
-                    }
-                ))
+                websites.map((website) => ({
+                    id:                    website.id,
+                    name:                  website.name,
+                    url:                   website.url,
+                    description:           website.description,
+                    page_identifier_rules: website.page_identifier_rules,
+                })),
+                OK
             );
         }
     )
 
-    // Get a website by ID
+// Get a website by ID
     .get(
         `/:id`,
         ACL({
@@ -130,17 +132,20 @@ export const WEBSITES = new Hono<HonoEnv>()
                 );
             }
 
-            return c.json({
-                id:                    website.id,
-                name:                  website.name,
-                url:                   website.url,
-                description:           website.description,
-                page_identifier_rules: website.page_identifier_rules,
-            });
+            return c.json(
+                {
+                    id:                    website.id,
+                    name:                  website.name,
+                    url:                   website.url,
+                    description:           website.description,
+                    page_identifier_rules: website.page_identifier_rules,
+                },
+                OK
+            );
         }
     )
 
-    // Update a website by ID
+// Update a website by ID
     .put(
         `/:id`,
         ACL({
@@ -152,10 +157,7 @@ export const WEBSITES = new Hono<HonoEnv>()
                 id: z.cuid2(`Invalid website ID format`),
             })
         ),
-        zValidator(
-            `json`,
-            UPDATE_WEBSITE_SCHEMA
-        ),
+        zValidator(`json`, UPDATE_WEBSITE_SCHEMA),
         async(c) => {
             const {
                 id,
@@ -177,12 +179,15 @@ export const WEBSITES = new Hono<HonoEnv>()
                 );
             }
 
-            if (data.url && await PRISMA.website.exists({
-                url: data.url,
-                NOT: {
-                    id,
-                },
-            })) {
+            if (
+                data.url &&
+                (await PRISMA.website.exists({
+                    url: data.url,
+                    NOT: {
+                        id,
+                    },
+                }))
+            ) {
                 return c.json(
                     {
                         error: `Website with this URL already exists`,
@@ -191,12 +196,15 @@ export const WEBSITES = new Hono<HonoEnv>()
                 );
             }
 
-            if (data.name && await PRISMA.website.exists({
-                name: data.name,
-                NOT:  {
-                    id,
-                },
-            })) {
+            if (
+                data.name &&
+                (await PRISMA.website.exists({
+                    name: data.name,
+                    NOT:  {
+                        id,
+                    },
+                }))
+            ) {
                 return c.json(
                     {
                         error: `Website with this name already exists`,
@@ -212,17 +220,20 @@ export const WEBSITES = new Hono<HonoEnv>()
                 data,
             });
 
-            return c.json({
-                id:                    updated_website.id,
-                name:                  updated_website.name,
-                url:                   updated_website.url,
-                description:           updated_website.description,
-                page_identifier_rules: updated_website.page_identifier_rules,
-            });
+            return c.json(
+                {
+                    id:                    updated_website.id,
+                    name:                  updated_website.name,
+                    url:                   updated_website.url,
+                    description:           updated_website.description,
+                    page_identifier_rules: updated_website.page_identifier_rules,
+                },
+                OK
+            );
         }
     )
 
-    // Delete a website by ID
+// Delete a website by ID
     .delete(
         `/:id`,
         ACL({
@@ -263,8 +274,8 @@ export const WEBSITES = new Hono<HonoEnv>()
             return c.json(
                 {
                     message: `Website deleted successfully`,
-                }
+                },
+                OK
             );
         }
     );
-

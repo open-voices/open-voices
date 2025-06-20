@@ -1,7 +1,7 @@
 import { type Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { describe, expect, it, vi } from "vitest";
-import { ensureUserIsAuthenticated } from "./ensure-user-is-authenticated.ts";
+import { ensureUserIsAuthenticated } from "./ensure-user-is-authenticated";
 
 describe("ensureUserIsAuthenticated", () => {
   it("should call next() when user and session are present", async () => {

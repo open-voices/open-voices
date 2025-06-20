@@ -27,7 +27,7 @@ vi.mock("../lib/prisma", () => {
   };
 });
 
-vi.mock("../middlewares/acl.ts", () => {
+vi.mock("../middlewares/acl", () => {
   const ACL = () => async (c: any, next: any) => {
     // Mock user context for authenticated endpoints
     c.set("user", { id: "user123" });
@@ -38,14 +38,14 @@ vi.mock("../middlewares/acl.ts", () => {
   };
 });
 
-vi.mock("../middlewares/with-features.ts", () => {
+vi.mock("../middlewares/with-features", () => {
   const withFeatures = () => async (c: any, next: any) => next();
   return {
     withFeatures: vi.fn(withFeatures),
   };
 });
 
-vi.mock("../lib/glob-match.ts", () => ({
+vi.mock("../lib/glob-match", () => ({
   formatUrlMatch: vi.fn(),
 }));
 
