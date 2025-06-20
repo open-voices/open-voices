@@ -73,7 +73,7 @@ const APP = new Hono<HonoEnv>()
             },
             INTERNAL_SERVER_ERROR
         );
-    })
+    });
 
 export default {
     port:  3000,
