@@ -12,6 +12,9 @@ import {
 import { PRISMA } from "../lib/prisma";
 import { ACL } from "../middlewares/acl";
 import type { HonoEnv } from "../types/hono";
+import { ADVANCED_QUERY_SCHEMA } from "@open-voices/validation/advanced-schemas";
+import type { WebsiteWhereInput } from "../generated/prisma/models/Website";
+import { makePrismaDynamicFilter } from "../lib/make-prisma-dynamic-filter";
 
 export const WEBSITES = new Hono<HonoEnv>()
     .basePath(`websites`)
@@ -80,21 +83,53 @@ export const WEBSITES = new Hono<HonoEnv>()
         ACL({
             website: [ `list` ],
         }),
+        zValidator(
+            `query`,
+            ADVANCED_QUERY_SCHEMA
+        ),
         async(c) => {
+            const {
+                page,
+                limit,
+                sort,
+                filters,
+            } = c.req.valid(`query`);
+
+            const where = makePrismaDynamicFilter<WebsiteWhereInput>(
+                filters,
+                [
+                    `id`,
+                    `name`,
+                    `url`,
+                    `description`,
+                ]
+            );
+
             const websites = await PRISMA.website.findMany({
+                where,
                 orderBy: {
-                    name: `asc`,
+                    [sort?.by ?? `name`]: sort?.direction ?? `asc`,
                 },
+                // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+                skip: (page - 1) * limit,
+                take: limit,
+            });
+
+            const total = await PRISMA.website.count({
+                where,
             });
 
             return c.json(
-                websites.map((website) => ({
-                    id:                    website.id,
-                    name:                  website.name,
-                    url:                   website.url,
-                    description:           website.description,
-                    page_identifier_rules: website.page_identifier_rules,
-                })),
+                {
+                    websites: websites.map((website) => ({
+                        id:                    website.id,
+                        name:                  website.name,
+                        url:                   website.url,
+                        description:           website.description,
+                        page_identifier_rules: website.page_identifier_rules,
+                    })),
+                    total,
+                },
                 OK
             );
         }
