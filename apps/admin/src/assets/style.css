@@ -9,6 +9,7 @@
 
 @theme {
     --font-mono: "Ubuntu Sans Mono Variable", monospace;
+    --color-brutal-red: #ffa07a;
 }
 
 @utility brutal-filter {
@@ -97,6 +98,14 @@
         &:disabled {
             @apply grayscale-75 opacity-50 cursor-not-allowed;
         }
+
+        &[data-variant="subtle"] {
+            @apply border-0 bg-neutral-50 drop-shadow-none;
+
+            &:hover:not(:disabled) {
+                @apply bg-neutral-50 brutal-filter-sm;
+            }
+        }
     }
 
     .brutal-button-inverted {
@@ -151,7 +160,7 @@
         @apply brutal shadow-none brutal-filter-sm;
     }
 
-    .brutal-popover-arrow {
+    .brutal-popover-arrow, .brutal-menu-arrow {
         @apply brutal!;
     }
 
@@ -165,5 +174,9 @@
 
     .mantine-datatable-pagination {
         border-top: none;
+    }
+
+    .brutal-menu-dropdown {
+        @apply brutal shadow-none brutal-filter-sm;
     }
 }

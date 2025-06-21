@@ -64,6 +64,12 @@ export const theme = createTheme({
             classNames: {
                 control: "brutal-pagination-control",
             }
+        },
+        Menu: {
+            classNames: {
+                dropdown: "brutal-menu-dropdown",
+                arrow: "brutal-menu-arrow",
+            }
         }
     },
 });

@@ -157,7 +157,7 @@ export const CreateWebsiteModal: FC<ContextModalProps> = ({ context }) => {
                       <IconChevronDown size={16} />
                     </ActionIcon>
                     <ActionIcon
-                      className="bg-[#ffa07a] brutal-button-inverted"
+                      className="bg-brutal-red brutal-button-inverted"
                       disabled={form.values.page_identifier_rules.length <= 1}
                       onClick={() =>
                         form.removeListItem("page_identifier_rules", index)

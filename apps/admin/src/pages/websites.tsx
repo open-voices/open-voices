@@ -1,5 +1,13 @@
 import { useEffect, useState, type FC } from "react";
-import { Title, Text, Card, Button, Group, ActionIcon } from "@mantine/core";
+import {
+  Title,
+  Text,
+  Card,
+  Button,
+  Group,
+  ActionIcon,
+  Menu,
+} from "@mantine/core";
 import { DataTable, type DataTableSortStatus } from "mantine-datatable";
 import { API_CLIENT } from "../lib/client";
 import type {
@@ -8,11 +16,19 @@ import type {
   Websites as WebsitesType,
 } from "../types/website";
 import {
+  IconArrowsLeftRight,
   IconChevronUp,
   IconDatabaseExclamation,
+  IconDots,
   IconEdit,
   IconEye,
+  IconMaximize,
+  IconMessageCircle,
+  IconPencil,
+  IconPhoto,
+  IconSearch,
   IconSelector,
+  IconSettings,
   IconTrash,
 } from "@tabler/icons-react";
 import { modals } from "@mantine/modals";
@@ -73,6 +89,7 @@ export const Websites: FC = () => {
     columnAccessor: "name",
     direction: "asc",
   });
+  const [selected_records, setSelectedRecords] = useState<WebsitesType>([]);
 
   const filters_form = useForm({
     initialValues: {
@@ -272,37 +289,87 @@ export const Websites: FC = () => {
             },
             {
               accessor: "actions",
-              title: "",
-              width: 150,
-              textAlign: "right",
+              title: (
+                <>
+                  <Menu shadow="md" width={200} disabled={selected_records.length === 0}>
+                    <Menu.Target>
+                      <ActionIcon  disabled={selected_records.length === 0}>
+                        <IconDots size={18} />
+                      </ActionIcon>
+                    </Menu.Target>
+
+                    <Menu.Dropdown>
+                      <Menu.Label>Danger zone</Menu.Label>
+                      <Menu.Item
+                        color="red"
+                        leftSection={<IconTrash size={16} />}
+                        className="flex items-center text-sm"
+                        onClick={() => {
+                          modals.openContextModal({
+                            modal: "delete-selected-websites",
+                            title: <Title order={4}>Delete all selected websites</Title>,
+                            innerProps: {
+                              selected_records,
+                            }
+                          });
+                          setSelectedRecords([]);
+                        }}
+                      >
+                        Delete all
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
+                </>
+              ),
+              width: 50,
+              textAlign: "center",
               render(record) {
                 return (
-                  <Group gap={4} justify="right" wrap="nowrap">
-                    <ActionIcon
-                      size="sm"
-                      variant="subtle"
-                      color="green"
-                      onClick={() => {}}
-                    >
-                      <IconEye size={16} />
-                    </ActionIcon>
-                    <ActionIcon
-                      size="sm"
-                      variant="subtle"
-                      color="blue"
-                      onClick={() => {}}
-                    >
-                      <IconEdit size={16} />
-                    </ActionIcon>
-                    <ActionIcon
-                      size="sm"
-                      variant="subtle"
-                      color="red"
-                      onClick={() => {}}
-                    >
-                      <IconTrash size={16} />
-                    </ActionIcon>
-                  </Group>
+                  <Menu shadow="md" width={200}>
+                    <Menu.Target>
+                      <ActionIcon>
+                        <IconDots size={18} />
+                      </ActionIcon>
+                    </Menu.Target>
+
+                    <Menu.Dropdown>
+                      <Menu.Label>Application</Menu.Label>
+                      <Menu.Item leftSection={<IconSettings size={14} />}>
+                        Settings
+                      </Menu.Item>
+                      <Menu.Item leftSection={<IconMessageCircle size={14} />}>
+                        Messages
+                      </Menu.Item>
+                      <Menu.Item leftSection={<IconPhoto size={14} />}>
+                        Gallery
+                      </Menu.Item>
+                      <Menu.Item
+                        leftSection={<IconSearch size={14} />}
+                        rightSection={
+                          <Text size="xs" c="dimmed">
+                            ⌘K
+                          </Text>
+                        }
+                      >
+                        Search
+                      </Menu.Item>
+
+                      <Menu.Divider />
+
+                      <Menu.Label>Danger zone</Menu.Label>
+                      <Menu.Item
+                        leftSection={<IconArrowsLeftRight size={14} />}
+                      >
+                        Transfer my data
+                      </Menu.Item>
+                      <Menu.Item
+                        color="red"
+                        leftSection={<IconTrash size={14} />}
+                      >
+                        Delete my account
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
                 );
               },
             },
@@ -348,6 +415,9 @@ export const Websites: FC = () => {
           onPageChange={(p) => setPage(p)}
           recordsPerPageOptions={[10, 15, 20, 25, 50]}
           onRecordsPerPageChange={setLimit}
+          selectedRecords={selected_records}
+          onSelectedRecordsChange={setSelectedRecords}
+          selectionTrigger="cell"
         />
       </Card>
     </>
