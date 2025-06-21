@@ -90,16 +90,24 @@
     .brutal-button {
         @apply text-black bg-white brutal brutal-filter-sm;
 
-        &:hover {
+        &:hover:not(:disabled) {
             @apply brutal-filter-none;
+        }
+
+        &:disabled {
+            @apply grayscale-75 opacity-50 cursor-not-allowed;
         }
     }
 
     .brutal-button-inverted {
         @apply text-black bg-white brutal brutal-filter-none;
 
-        &:hover {
+        &:hover:not(:disabled) {
             @apply brutal-filter-sm;
+        }
+
+        &:disabled {
+            @apply grayscale-75 opacity-50 cursor-not-allowed;
         }
     }
 

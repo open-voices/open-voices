@@ -41,6 +41,11 @@ export const theme = createTheme({
                 root: "brutal-button",
             },
         },
+        ActionIcon: {
+            classNames: {
+                root: "brutal-button",
+            },
+        },
         Table: {
             classNames: {
                 table: "brutal-table",
