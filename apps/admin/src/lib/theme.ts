@@ -48,6 +48,17 @@ export const theme = createTheme({
                 td: "brutal-table-cell",
                 th: "brutal-table-heading",
             },
+        },
+        Popover: {
+            classNames: {
+                dropdown: "brutal-popover",
+                arrow: "brutal-popover-arrow",
+            }
+        },
+        Pagination: {
+            classNames: {
+                control: "brutal-pagination-control",
+            }
         }
     },
 });

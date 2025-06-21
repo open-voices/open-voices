@@ -30,35 +30,45 @@
     filter: drop-shadow(0px 0px 0px #000);
 }
 
+@utility brutal {
+    @apply border-2 border-solid border-black transition-all duration-200 ease-in-out;
+}
+
+@utility brutal-lg {
+    @apply border-4;
+}
+
 @layer components {
     .brutal-card {
-        @apply bg-white border-4 border-solid border-black transition-all duration-200 ease-in-out brutal-filter;
+        @apply bg-white brutal-lg brutal-filter;
     }
 
     .brutal-dialog {
-        @apply bg-white border-4 border-solid border-black brutal-filter;
+        @apply bg-white brutal-lg brutal-filter;
     }
 
     .brutal-navbar {
-        @apply bg-white border-4 border-solid border-black my-1 ml-1 brutal-filter;
+        @apply bg-white brutal-lg my-1 ml-1 brutal-filter;
         height: calc(100dvh - var(--spacing) * 3);
         border-radius: var(--mantine-radius-default);
+        border-inline-end: 4px solid black !important;
     }
 
     .brutal-nav-link:not([data-active="true"]) {
-        @apply text-black transition-all duration-200 ease-in-out;
+        @apply outline-2 outline-transparent text-black transition-all duration-200 ease-in-out;
+        border-radius: var(--mantine-radius-default);
 
         &:hover:not(.no-animation) {
-            @apply bg-neutral-100 ml-1.5;
+            @apply outline-black outline-offset-2;
         }
-
-        &.no-animation:hover {
-            @apply bg-neutral-100;
-        }
+    }
+    .brutal-nav-link[data-active="true"] {
+        @apply bg-white outline-2 outline-black outline-offset-2 text-black transition-all duration-200 ease-in-out;
+        border-radius: var(--mantine-radius-default);
     }
 
     .brutal-input {
-        @apply bg-white border-2 border-solid border-black transition-all duration-200 ease-in-out brutal-filter-none;
+        @apply bg-white brutal brutal-filter-none;
 
         &:focus {
             @apply brutal-filter-sm;
@@ -66,7 +76,7 @@
     }
 
     .brutal-checkbox {
-        @apply border-2 border-solid border-black transition-all duration-200 ease-in-out;
+        @apply brutal;
 
         &:checked {
             @apply brutal-filter-sm;
@@ -78,7 +88,7 @@
     }
 
     .brutal-button {
-        @apply text-black bg-white border-2 border-solid border-black transition-all duration-200 ease-in-out brutal-filter-sm;
+        @apply text-black bg-white brutal brutal-filter-sm;
 
         &:hover {
             @apply brutal-filter-none;
@@ -86,7 +96,7 @@
     }
 
     .brutal-button-inverted {
-        @apply text-black bg-white border-2 border-solid border-black transition-all duration-200 ease-in-out brutal-filter-none;
+        @apply text-black bg-white brutal brutal-filter-none;
 
         &:hover {
             @apply brutal-filter-sm;
@@ -94,10 +104,10 @@
     }
 
     .brutal-table[data-with-table-border="true"] {
-        @apply border-2 border-solid border-black;
+        @apply brutal;
 
         & th, & td {
-            @apply border-2 border-solid border-black;
+            @apply brutal;
         }
     }
 
@@ -127,5 +137,25 @@
         &:last-child {
             @apply border-r-0;
         }
+    }
+
+    .brutal-popover {
+        @apply brutal shadow-none brutal-filter-sm;
+    }
+
+    .brutal-popover-arrow {
+        @apply brutal!;
+    }
+
+    .brutal-pagination-control {
+        @apply brutal brutal-filter-sm text-black;
+
+        &:hover, &[data-active="true"] {
+            @apply brutal-filter-none;
+        }
+    }
+
+    .mantine-datatable-pagination {
+        border-top: none;
     }
 }

@@ -61,7 +61,7 @@ export const DashboardLayout: FC = () => {
             Let your community be heard
           </Title>
         </AppShell.Section>
-        <AppShell.Section grow my="md" component={ScrollArea}>
+        <AppShell.Section grow my="md" className="space-y-3">
           <NavLink
             href={"/dashboard"}
             label="Home"

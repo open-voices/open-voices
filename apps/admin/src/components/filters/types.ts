@@ -18,25 +18,21 @@ export type StringOperators =
   | `contains`
   | `starts_with`
   | `ends_with`
-  | `in`
   | `not_equals`
   | `not_contains`
   | `not_starts_with`
-  | `not_ends_with`
-  | `not_in`;
+  | `not_ends_with`;
 export type NumberOperators =
   | `equals`
   | `lt`
   | `lte`
   | `gt`
   | `gte`
-  | `in`
   | `not_equals`
   | `not_lt`
   | `not_lte`
   | `not_gt`
-  | `not_gte`
-  | `not_in`;
+  | `not_gte`;
 export type BooleanOperators = `equals`;
 export type DateOperators =
   | `equals`

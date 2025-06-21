@@ -37,12 +37,15 @@ export function Filter<T extends FilterType>(props: FilterProps<T>) {
   }
 
   if (props._type === "number") {
+    // TODO: Implement NumberFilter component
     return <>Number Filter for {props.field}</>;
   }
 
   if (props._type === "boolean") {
+    // TODO: Implement BooleanFilter component
     return <>Boolean Filter for {props.field}</>;
   }
 
+  // TODO: Implement DateFilter component
   return <>Date Filter for {props.field}</>;
 }
